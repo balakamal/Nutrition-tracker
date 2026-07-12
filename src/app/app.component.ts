@@ -395,6 +395,14 @@ export class AppComponent implements OnInit {
     }
   }
 
+  deleteFoodLog(index: number): void {
+    if (confirm('Are you sure you want to delete this log entry?')) {
+      this.foodLogs.splice(index, 1);
+      localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+      this.calculateTotals();
+    }
+  }
+
   // Vision Analysis Operations
   async triggerDemoAnalysis(demo: any): Promise<void> {
     this.isAnalyzing = true;
