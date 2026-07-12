@@ -33,11 +33,15 @@
   --btn-secondary-hover: hsl(218, 23%, 22%);
   --dialog-overlay: rgba(13, 13, 18, 0.85);
 
+  /* Primary Blue Fusion Color */
+  --color-primary: hsl(207, 45%, 48%);         /* Blue Fusion */
+  --color-primary-hover: hsl(207, 50%, 55%);
+
   /* Pantone Accent Palette */
   --color-calories: hsl(150, 65%, 55%);        /* Veiled Vista (Sage) */
   --color-protein: hsl(270, 90%, 80%);         /* Quiet Violet (Lavender) */
   --color-carbs: hsl(43, 95%, 55%);            /* Golden Mist (Gold) */
-  --color-fat: hsl(352, 85%, 68%);             /* Coral Mist */
+  --color-fat: hsl(122, 50%, 58%);             /* Green shade for Fat */
   --color-steps: hsl(180, 62%, 55%);           /* Blue Fusion (Teal) */
   --color-sleep: hsl(258, 80%, 78%);           /* Slate Indigo */
   --color-workout: hsl(25, 92%, 58%);          /* Sunset Ochre */
@@ -62,10 +66,13 @@
   --btn-secondary-hover: hsl(218, 23%, 22%);
   --dialog-overlay: rgba(13, 13, 18, 0.85);
 
+  --color-primary: hsl(207, 45%, 48%);
+  --color-primary-hover: hsl(207, 50%, 55%);
+
   --color-calories: hsl(150, 65%, 55%);
   --color-protein: hsl(270, 90%, 80%);
   --color-carbs: hsl(43, 95%, 55%);
-  --color-fat: hsl(352, 85%, 68%);
+  --color-fat: hsl(122, 50%, 58%);
   --color-steps: hsl(180, 62%, 55%);
   --color-sleep: hsl(258, 80%, 78%);
   --color-workout: hsl(25, 92%, 58%);
@@ -92,11 +99,14 @@
   --btn-secondary-hover: hsl(215, 20%, 80%);
   --dialog-overlay: rgba(200, 205, 215, 0.6);
 
+  --color-primary: hsl(207, 35%, 40%);         /* Blue Fusion for light bg */
+  --color-primary-hover: hsl(207, 40%, 46%);
+
   /* Polished high-contrast Pantone accents for Light Mode */
   --color-calories: hsl(150, 75%, 28%);        /* Deep Veiled Vista (Sage) */
   --color-protein: hsl(262, 75%, 52%);         /* Quiet Violet (Lavender) */
   --color-carbs: hsl(38, 90%, 42%);            /* Deep Golden Mist (Gold) */
-  --color-fat: hsl(348, 80%, 48%);
+  --color-fat: hsl(122, 55%, 35%);             /* Green shade for Fat in light mode */
   --color-steps: hsl(175, 75%, 34%);           /* Ocean Fusion */
   --color-sleep: hsl(255, 65%, 50%);           /* Slate Indigo */
   --color-workout: hsl(20, 85%, 45%);          /* Sunset Ochre */
@@ -190,15 +200,15 @@ p {
 
 /* Button & Control styling */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-calories) 0%, hsl(145, 60%, 40%) 100%);
-  color: var(--bg-primary);
+  background: var(--color-primary);
+  color: #ffffff;
   border: none;
   font-weight: 700;
   padding: 14px 28px;
   font-size: 1rem;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  box-shadow: 0 8px 24px -6px hsla(145, 75%, 48%, 0.3);
+  box-shadow: 0 8px 24px -6px hsla(207, 45%, 40%, 0.3);
   transition: var(--transition-smooth);
   display: inline-flex;
   align-items: center;
@@ -209,8 +219,8 @@ p {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px hsla(145, 75%, 48%, 0.45);
-  filter: brightness(1.1);
+  box-shadow: 0 12px 32px -4px hsla(207, 45%, 40%, 0.45);
+  background: var(--color-primary-hover);
 }
 
 .btn-primary:active {
