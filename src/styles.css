@@ -23,11 +23,15 @@
   
   --glass-bg: hsla(220, 20%, 11%, 0.7);
   --glass-border: hsla(0, 0%, 100%, 0.08);
+  --glass-border-hover: hsla(0, 0%, 100%, 0.18);
   --glass-glow: hsla(0, 0%, 100%, 0.02);
 
   --text-primary: hsl(0, 0%, 96%);
   --text-secondary: hsl(220, 14%, 74%);
   --text-muted: hsl(220, 10%, 54%);
+
+  --btn-secondary-hover: hsl(220, 16%, 22%);
+  --dialog-overlay: rgba(0, 0, 0, 0.85);
 
   /* Professional Premium Palette */
   --color-calories: hsl(162, 72%, 46%);       /* Emerald Mint */
@@ -48,12 +52,16 @@
   
   --glass-bg: hsla(220, 20%, 11%, 0.7);
   --glass-border: hsla(0, 0%, 100%, 0.08);
+  --glass-border-hover: hsla(0, 0%, 100%, 0.18);
   --glass-glow: hsla(0, 0%, 100%, 0.02);
 
   --text-primary: hsl(0, 0%, 96%);
   --text-secondary: hsl(220, 14%, 74%);
   --text-muted: hsl(220, 10%, 54%);
   
+  --btn-secondary-hover: hsl(220, 16%, 22%);
+  --dialog-overlay: rgba(0, 0, 0, 0.85);
+
   --color-calories: hsl(162, 72%, 46%);
   --color-protein: hsl(239, 84%, 67%);
   --color-carbs: hsl(38, 92%, 50%);
@@ -67,29 +75,33 @@
 
 /* Explicit Light Theme (high-end elegant card system) */
 [data-theme="light"] {
-  --bg-primary: hsl(220, 20%, 96%);
-  --bg-secondary: hsl(220, 18%, 91%);
-  --bg-tertiary: hsl(220, 15%, 86%);
-  --bg-surface: hsl(0, 0%, 100%);
+  --bg-primary: hsl(220, 15%, 93%);
+  --bg-secondary: hsl(220, 15%, 95%);
+  --bg-tertiary: hsl(220, 12%, 89%);
+  --bg-surface: hsl(220, 15%, 96%); /* Container background: very soft cool gray */
   
-  --glass-bg: hsla(220, 18%, 97%, 0.85);
-  --glass-border: hsla(220, 12%, 10%, 0.08);
-  --glass-glow: hsla(0, 0%, 0%, 0.01);
+  --glass-bg: hsl(0, 0%, 100%);     /* Cards are crisp pure white */
+  --glass-border: hsla(220, 15%, 10%, 0.06);
+  --glass-border-hover: hsla(220, 15%, 10%, 0.14);
+  --glass-glow: hsla(0, 0%, 100%, 0.8);
 
-  --text-primary: hsl(220, 28%, 12%);
-  --text-secondary: hsl(220, 16%, 32%);
-  --text-muted: hsl(220, 10%, 50%);
+  --text-primary: hsl(220, 35%, 15%);
+  --text-secondary: hsl(220, 20%, 35%);
+  --text-muted: hsl(220, 12%, 52%);
 
-  /* Muted Elegant Accents for Light Mode */
-  --color-calories: hsl(162, 75%, 35%);
-  --color-protein: hsl(239, 65%, 50%);
-  --color-carbs: hsl(38, 90%, 40%);
-  --color-fat: hsl(350, 75%, 50%);
-  --color-steps: hsl(172, 70%, 36%);
-  --color-sleep: hsl(235, 60%, 55%);
-  --color-workout: hsl(25, 80%, 42%);
+  --btn-secondary-hover: hsl(220, 12%, 84%);
+  --dialog-overlay: rgba(200, 205, 215, 0.6);
+
+  /* Fresh, highly readable accents for Light Mode */
+  --color-calories: hsl(160, 84%, 30%);      /* Deep Emerald */
+  --color-protein: hsl(240, 75%, 55%);       /* Royal Blue */
+  --color-carbs: hsl(35, 95%, 43%);          /* Amber Gold */
+  --color-fat: hsl(340, 80%, 50%);           /* Rose Red */
+  --color-steps: hsl(175, 75%, 35%);         /* Ocean Teal */
+  --color-sleep: hsl(230, 70%, 50%);         /* Lavender Blue */
+  --color-workout: hsl(20, 85%, 45%);        /* Sunset Orange */
   
-  --shadow-premium: 0 16px 40px -10px rgba(22, 31, 48, 0.08);
+  --shadow-premium: 0 10px 30px -8px rgba(15, 23, 42, 0.05), 0 4px 12px -4px rgba(15, 23, 42, 0.02);
 }
 
 /* Global Reset & Base Styles */
@@ -173,7 +185,7 @@ p {
 
 .glass-card:hover {
   transform: translateY(-4px) scale(1.01);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--glass-border-hover);
 }
 
 /* Button & Control styling */
@@ -223,8 +235,8 @@ p {
 }
 
 .btn-secondary:hover {
-  background: hsl(225, 18%, 24%);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--btn-secondary-hover);
+  border-color: var(--glass-border-hover);
 }
 
 /* Form Controls */

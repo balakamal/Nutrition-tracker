@@ -30,23 +30,94 @@
   </header>
 
   <!-- Settings Dialog Overlay -->
-  <div *ngIf="showSettings" class="onboarding-overlay" style="z-index: 110; display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
-    <div class="glass-card animate-fade-up" style="max-width: 400px; width: 90%; text-align: center; border-radius: var(--radius-expressive-lg); border-color: rgba(255,255,255,0.15);">
-      <h2 style="margin-bottom: 12px;">Configuration</h2>
-      <p style="margin-bottom: 24px; font-size: 0.9rem;">Manage your locally stored Google Gemini API Key.</p>
+  <div *ngIf="showSettings" class="onboarding-overlay" style="z-index: 110; display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--dialog-overlay); backdrop-filter: blur(10px);">
+    <div class="glass-card animate-fade-up" style="max-width: 420px; width: 90%; text-align: center; border-radius: var(--radius-expressive-lg); border-color: rgba(255,255,255,0.15); max-height: 85vh; overflow-y: auto; padding: 28px 20px;">
+      <h2 style="margin-bottom: 8px; font-size: 1.4rem; font-weight: 800;">Settings & Profile</h2>
+      <p style="margin-bottom: 20px; font-size: 0.85rem; color: var(--text-muted);">Configure your personal parameters for tailored daily tracking.</p>
       
-      <div class="input-group" style="text-align: left;">
-        <label>Gemini API Key</label>
-        <input type="password" class="form-input" [(ngModel)]="apiKeyInput" placeholder="AIzaSy...">
+      <!-- API Key Section -->
+      <div style="text-align: left; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 16px;">
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--color-calories); text-transform: uppercase; letter-spacing: 0.05em;">API Configuration</h3>
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Gemini API Key</label>
+          <input type="password" class="form-input" [(ngModel)]="apiKeyInput" placeholder="AIzaSy...">
+        </div>
       </div>
 
-      <div style="display: flex; gap: 12px; margin-top: 24px;">
+      <!-- Profile Section -->
+      <div style="text-align: left; margin-bottom: 20px; display: flex; flex-direction: column; gap: 14px;">
+        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--color-protein); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">User Profile</h3>
+        
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Name</label>
+          <input type="text" class="form-input" [(ngModel)]="profileName" placeholder="Your name...">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Age (Years)</label>
+            <input type="number" class="form-input" [(ngModel)]="profileAge" min="1" max="120">
+          </div>
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Gender</label>
+            <select class="form-input" [(ngModel)]="profileGender" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Weight (kg)</label>
+            <input type="number" class="form-input" [(ngModel)]="profileWeight" min="20" max="300">
+          </div>
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Height (cm)</label>
+            <input type="number" class="form-input" [(ngModel)]="profileHeight" min="50" max="250">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Activity Level</label>
+          <select class="form-input" [(ngModel)]="profileActivity" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+            <option value="Sedentary">Sedentary (No Exercise)</option>
+            <option value="Lightly Active">Lightly Active (1-3 Days/Wk)</option>
+            <option value="Moderately Active">Moderately Active (3-5 Days/Wk)</option>
+            <option value="Very Active">Very Active (6-7 Days/Wk)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Weight Goal</label>
+          <select class="form-input" [(ngModel)]="profileGoal" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+            <option value="Lose Weight">Lose Weight (-500 kcal)</option>
+            <option value="Maintain Weight">Maintain Weight (TDEE)</option>
+            <option value="Gain Weight">Gain Weight (+500 kcal)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Health Sync Mode Options -->
+      <div style="text-align: left; margin-bottom: 24px; border-top: 1px solid var(--glass-border); padding-top: 16px;">
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--color-carbs); text-transform: uppercase; letter-spacing: 0.05em;">Health Connect Mode</h3>
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Source of Steps/Sleep</label>
+          <select class="form-input" [(ngModel)]="healthMode" (ngModelChange)="saveUserProfile()" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+            <option value="sync">Automatic Health Connect Sync</option>
+            <option value="manual">Manual Input Override (Use Actual Values)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
         <button class="btn-secondary" style="flex: 1;" (click)="showSettings = false">Cancel</button>
-        <button class="btn-primary" style="flex: 1;" (click)="saveApiKey()">Save Key</button>
+        <button class="btn-primary" style="flex: 1;" (click)="saveSettingsConfig()">Save Settings</button>
       </div>
 
       <button class="btn-secondary" style="margin-top: 16px; width: 100%; border-color: hsl(0, 75%, 45%); color: hsl(0, 75%, 65%);" (click)="resetApiKey()">
-        Clear Key & Reset
+        Clear Config & Reset App
       </button>
     </div>
   </div>
@@ -270,8 +341,26 @@
         {{ healthConnectReason }}
       </div>
 
+      <!-- Manual Input Override Form -->
+      <div *ngIf="healthMode === 'manual'" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; padding: 16px; border-radius: var(--radius-expressive-md); background-color: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);">
+        <h3 style="font-size: 0.9rem; font-weight: 700; color: var(--color-carbs); margin-bottom: 4px;">Manual Health Entries</h3>
+        
+        <div class="input-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.75rem;">Daily Steps</label>
+          <input type="number" class="form-input" [(ngModel)]="manualSteps" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
+        </div>
+
+        <div class="input-group" style="margin-bottom: 0;">
+          <label style="font-size: 0.75rem;">Sleep Duration (Minutes)</label>
+          <input type="number" class="form-input" [(ngModel)]="manualSleep" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+            = {{ Math.floor(manualSleep / 60) }} hours {{ manualSleep % 60 }} minutes
+          </div>
+        </div>
+      </div>
+
       <!-- If permission rationale required or not linked -->
-      <div *ngIf="healthConnectStatus === 'Available' && dailySteps === 0 && !isSyncing" style="margin-bottom: 16px; background-color: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: var(--radius-expressive-md); text-align: center;">
+      <div *ngIf="healthMode === 'sync' && healthConnectStatus === 'Available' && dailySteps === 0 && !isSyncing" style="margin-bottom: 16px; background-color: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: var(--radius-expressive-md); text-align: center;">
         <p style="font-size: 0.85rem; margin-bottom: 12px;">Sync your steps, sleep sessions, and workout history directly from your Android device.</p>
         <button class="btn-primary" style="background: linear-gradient(135deg, var(--color-steps) 0%, hsl(45, 80%, 40%) 100%); box-shadow: 0 8px 20px -6px hsla(45, 95%, 50%, 0.25); color: black;" (click)="requestHealthConnectPermission()">
           Authorize & Sync Data
@@ -279,13 +368,13 @@
       </div>
 
       <!-- Syncing overlay -->
-      <div *ngIf="isSyncing" style="text-align: center; padding: 16px 0;">
+      <div *ngIf="healthMode === 'sync' && isSyncing" style="text-align: center; padding: 16px 0;">
         <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid var(--glass-border); border-top-color: var(--color-steps); border-radius: 50%; animation: 0.8s linear infinite rotate;" class="spinner"></div>
         <p style="margin-top: 8px; font-size: 0.85rem; color: var(--color-steps);">Fetching Health Connect database...</p>
       </div>
 
       <!-- Metrics Display -->
-      <div *ngIf="healthConnectStatus === 'Available' && (dailySteps > 0 || sleepSessions.length > 0)" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">
+      <div *ngIf="(healthConnectStatus === 'Available' || healthMode === 'manual') && (dailySteps > 0 || sleepSessions.length > 0)" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">
         
         <!-- Steps row -->
         <div style="background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--radius-expressive-md); display: flex; justify-content: space-between; align-items: center;">

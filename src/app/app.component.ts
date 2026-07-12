@@ -22,6 +22,20 @@ export class AppComponent implements OnInit {
   // Active Theme Selection
   activeTheme: 'light' | 'dark' | 'system' = 'system';
 
+  // User Profile State
+  profileName = 'User';
+  profileAge = 28;
+  profileGender: 'Male' | 'Female' | 'Other' = 'Male';
+  profileWeight = 70; // kg
+  profileHeight = 175; // cm
+  profileActivity: 'Sedentary' | 'Lightly Active' | 'Moderately Active' | 'Very Active' = 'Moderately Active';
+  profileGoal: 'Lose Weight' | 'Maintain Weight' | 'Gain Weight' = 'Maintain Weight';
+
+  // Manual Health Input State
+  healthMode: 'sync' | 'manual' = 'sync';
+  manualSteps = 8000;
+  manualSleep = 480; // minutes
+
   // Nutrition Goal and Intake State
   targetCalories = 2500;
   consumedCalories = 0;
@@ -84,8 +98,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkApiKeyConfig();
-    this.initHealthConnect();
     this.loadFoodLogs();
+    this.loadUserProfile();
+    this.initHealthConnect();
     this.initTheme();
   }
 
@@ -139,10 +154,129 @@ export class AppComponent implements OnInit {
     }
   }
 
+  saveSettingsConfig(): void {
+    // Save API key if modified
+    if (this.apiKeyInput.trim() && !this.apiKeyInput.includes('••••')) {
+      this.geminiService.saveApiKey(this.apiKeyInput);
+      this.hasApiKey = true;
+    }
+    // Save profile and sync mode
+    this.saveUserProfile();
+    this.showSettings = false;
+    this.analysisError = null;
+  }
+
   resetApiKey(): void {
     this.geminiService.clearApiKey();
     this.hasApiKey = false;
     this.apiKeyInput = '';
+    
+    // Clear profile and logs as well
+    localStorage.removeItem('user_profile');
+    localStorage.removeItem('food_logs');
+    localStorage.removeItem('health_mode');
+    localStorage.removeItem('manual_steps');
+    localStorage.removeItem('manual_sleep');
+    
+    this.profileName = 'User';
+    this.profileAge = 28;
+    this.profileGender = 'Male';
+    this.profileWeight = 70;
+    this.profileHeight = 175;
+    this.profileActivity = 'Moderately Active';
+    this.profileGoal = 'Maintain Weight';
+    this.healthMode = 'sync';
+    this.manualSteps = 8000;
+    this.manualSleep = 480;
+
+    this.foodLogs = [];
+    this.calculateTotals();
+    this.recalculateGoals();
+    this.initHealthConnect();
+  }
+
+  // User Profile configuration
+  loadUserProfile(): void {
+    const savedProfile = localStorage.getItem('user_profile');
+    if (savedProfile) {
+      try {
+        const profile = JSON.parse(savedProfile);
+        this.profileName = profile.name || 'User';
+        this.profileAge = Number(profile.age) || 28;
+        this.profileGender = profile.gender || 'Male';
+        this.profileWeight = Number(profile.weight) || 70;
+        this.profileHeight = Number(profile.height) || 175;
+        this.profileActivity = profile.activity || 'Moderately Active';
+        this.profileGoal = profile.goal || 'Maintain Weight';
+      } catch (e) {
+        console.error('Failed to parse user profile', e);
+      }
+    }
+    this.healthMode = (localStorage.getItem('health_mode') as 'sync' | 'manual') || 'sync';
+    this.manualSteps = Number(localStorage.getItem('manual_steps')) || 8000;
+    this.manualSleep = Number(localStorage.getItem('manual_sleep')) || 480;
+
+    this.recalculateGoals();
+  }
+
+  saveUserProfile(): void {
+    const profile = {
+      name: this.profileName,
+      age: this.profileAge,
+      gender: this.profileGender,
+      weight: this.profileWeight,
+      height: this.profileHeight,
+      activity: this.profileActivity,
+      goal: this.profileGoal
+    };
+    localStorage.setItem('user_profile', JSON.stringify(profile));
+    localStorage.setItem('health_mode', this.healthMode);
+    localStorage.setItem('manual_steps', String(this.manualSteps));
+    localStorage.setItem('manual_sleep', String(this.manualSleep));
+
+    this.recalculateGoals();
+    this.syncHealthData();
+  }
+
+  recalculateGoals(): void {
+    // Mifflin-St Jeor BMR equation
+    let bmr = 10 * this.profileWeight + 6.25 * this.profileHeight - 5 * this.profileAge;
+    if (this.profileGender === 'Male') {
+      bmr += 5;
+    } else if (this.profileGender === 'Female') {
+      bmr -= 161;
+    } else {
+      bmr -= 78; // Midpoint average
+    }
+
+    // TDEE activity factor
+    let factor = 1.2;
+    if (this.profileActivity === 'Lightly Active') factor = 1.375;
+    else if (this.profileActivity === 'Moderately Active') factor = 1.55;
+    else if (this.profileActivity === 'Very Active') factor = 1.725;
+
+    let tdee = bmr * factor;
+
+    // Weight goal adjustment
+    if (this.profileGoal === 'Lose Weight') {
+      this.targetCalories = Math.max(1200, Math.round(tdee - 500));
+    } else if (this.profileGoal === 'Gain Weight') {
+      this.targetCalories = Math.round(tdee + 500);
+    } else {
+      this.targetCalories = Math.round(tdee);
+    }
+
+    // Macros calculations
+    // Protein: 2.0g per kg of weight (4 kcal per gram)
+    this.targetProtein = Math.round(this.profileWeight * 2.0);
+    
+    // Fat: 25% of calories. (9 kcal per gram)
+    this.targetFat = Math.round((this.targetCalories * 0.25) / 9);
+
+    // Carbs: Remainder of calories. (4 kcal per gram)
+    const proteinKcal = this.targetProtein * 4;
+    const fatKcal = this.targetFat * 9;
+    this.targetCarbs = Math.max(50, Math.round((this.targetCalories - proteinKcal - fatKcal) / 4));
   }
 
   // Health Connect operations
@@ -152,9 +286,7 @@ export class AppComponent implements OnInit {
     this.healthConnectReason = detail.reason || '';
     this.healthConnectIsMocked = detail.isMocked;
 
-    if (this.healthConnectStatus === 'Available') {
-      await this.syncHealthData();
-    }
+    await this.syncHealthData();
   }
 
   async requestHealthConnectPermission(): Promise<void> {
@@ -165,6 +297,30 @@ export class AppComponent implements OnInit {
   }
 
   async syncHealthData(): Promise<void> {
+    if (this.healthMode === 'manual') {
+      this.dailySteps = this.manualSteps;
+      this.sleepSessions = [
+        {
+          id: 'manual_sleep',
+          startTime: new Date(Date.now() - (this.manualSleep + 60) * 60000).toISOString(),
+          endTime: new Date().toISOString(),
+          durationMinutes: this.manualSleep,
+          stage: 'Manual Sleep Log'
+        }
+      ];
+      this.workouts = [
+        {
+          id: 'manual_workout',
+          title: 'Manual Exercise Activity',
+          startTime: new Date(Date.now() - 3600000).toISOString(),
+          durationMinutes: 45,
+          caloriesBurned: 300,
+          type: 'General'
+        }
+      ];
+      return;
+    }
+
     if (this.isSyncing) return;
     this.isSyncing = true;
     try {
