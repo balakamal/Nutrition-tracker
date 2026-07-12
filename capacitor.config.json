@@ -1,0 +1,5 @@
+{
+  "appId": "com.personal.nutritiontracker",
+  "appName": "Nutrition Tracker",
+  "webDir": "dist/nutrition-tracker/browser"
+}
