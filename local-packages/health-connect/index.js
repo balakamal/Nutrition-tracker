@@ -68,7 +68,8 @@ const mockImplementation = {
 
 const proxyHandler = {
   get(target, prop) {
-    if (Capacitor.isNativePlatform()) {
+    const isPluginAvailable = Capacitor.isPluginAvailable('HealthConnect');
+    if (Capacitor.isNativePlatform() && isPluginAvailable) {
       return async (...args) => {
         try {
           if (target[prop]) {
@@ -90,7 +91,9 @@ const proxyHandler = {
       return async (...args) => {
         const mockResult = await mockImplementation[prop](...args);
         if (mockResult && typeof mockResult === 'object') {
-          mockResult._nativeError = 'Health Connect is not supported on non-Android platforms (running on Web/Desktop)';
+          mockResult._nativeError = !isPluginAvailable
+            ? 'Health Connect plugin is not natively implemented or registered on this Android app build.'
+            : 'Health Connect is not supported on non-Android platforms (running on Web/Desktop)';
           mockResult._nativeFailed = true;
         }
         return mockResult;
