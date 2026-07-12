@@ -1,7 +1,5 @@
-import { registerPlugin, Capacitor } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 import { HealthConnect as NativeHealthConnect } from '@pianissimoproject/capacitor-health-connect';
-
-const HealthConnectNative = registerPlugin('HealthConnect');
 
 // We adapt the native plugin's API to the mock's original API names expected by the app.
 // Note: We use actual native Health Connect data without mock fallbacks!
