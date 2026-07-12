@@ -22,9 +22,9 @@ export class HealthConnectService {
   async checkDetailedAvailability(): Promise<HealthAvailability> {
     if (!this.isAndroid) {
       return {
-        status: 'Available',
-        reason: 'Running in Web environment (automatically falling back to mock data simulation).',
-        isMocked: true
+        status: 'NotSupported',
+        reason: 'Health Connect is not supported on non-Android platforms (running on Web/Desktop). Please use Manual Input mode.',
+        isMocked: false
       };
     }
 
@@ -32,13 +32,7 @@ export class HealthConnectService {
       const result = await HealthConnect.checkAvailability();
       
       let reason = '';
-      let isMocked = false;
-      
-      // If our JS proxy fallback caught a native failure, mark it.
-      if ((result as any)._nativeFailed) {
-        reason = `Native Health Connect failed: ${(result as any)._nativeError || 'Unknown native error'}. Using simulated fallback.`;
-        isMocked = true;
-      } else if (result.availability === 'NotInstalled') {
+      if (result.availability === 'NotInstalled') {
         reason = 'Health Connect app is not installed on this Android device. Please install it from the Google Play Store.';
       } else if (result.availability === 'NotSupported') {
         reason = 'Health Connect is not supported on this Android OS version. Requires Android 8.0 (API 26) or higher.';
@@ -47,16 +41,16 @@ export class HealthConnectService {
       }
 
       return {
-        status: (result as any)._nativeFailed ? 'Available' : result.availability,
+        status: result.availability,
         reason,
-        isMocked
+        isMocked: false
       };
     } catch (error: any) {
       console.error('Error checking Health Connect availability:', error);
       return {
         status: 'NotSupported',
         reason: `Failed to initialize Health Connect: ${error.message || error}`,
-        isMocked: true
+        isMocked: false
       };
     }
   }
@@ -74,8 +68,7 @@ export class HealthConnectService {
    */
   async requestPermissions(): Promise<boolean> {
     if (!this.isAndroid) {
-      console.warn('Requesting permissions simulated on web.');
-      return true;
+      return false;
     }
 
     try {
@@ -92,12 +85,10 @@ export class HealthConnectService {
 
   /**
    * Pulls deduplicated steps for the current day.
-   * Sums up step records for the today interval.
    */
   async getDailySteps(): Promise<number> {
     if (!this.isAndroid) {
-      // Return simulated steps for web testing
-      return 6842;
+      return 0;
     }
 
     try {
@@ -111,8 +102,6 @@ export class HealthConnectService {
         endTime: todayEnd.toISOString()
       });
 
-      // Sum up and deduplicate records. Some apps write steps in intervals.
-      // Deduplicate steps by aggregating.
       if (response && response.records) {
         return response.records.reduce((sum: number, record: any) => sum + (record.count || 0), 0);
       }
@@ -128,24 +117,7 @@ export class HealthConnectService {
    */
   async getSleepSessions(): Promise<any[]> {
     if (!this.isAndroid) {
-      // Return simulated sleep sessions for web testing
-      const now = new Date();
-      return [
-        {
-          id: 'sleep_1',
-          startTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 1).toISOString(),
-          endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 1 + 8 * 60 * 60 * 1000).toISOString(),
-          durationMinutes: 480,
-          stage: 'Deep Sleep'
-        },
-        {
-          id: 'sleep_2',
-          startTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 2).toISOString(),
-          endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 2 + 7.5 * 60 * 60 * 1000).toISOString(),
-          durationMinutes: 450,
-          stage: 'Light Sleep'
-        }
-      ];
+      return [];
     }
 
     try {
@@ -171,25 +143,7 @@ export class HealthConnectService {
    */
   async getWorkouts(): Promise<any[]> {
     if (!this.isAndroid) {
-      // Return simulated workouts for web testing
-      return [
-        {
-          id: 'workout_1',
-          title: 'HIIT Cardio Session',
-          startTime: new Date(Date.now() - 3 * 3600000).toISOString(),
-          durationMinutes: 45,
-          caloriesBurned: 420,
-          type: 'HIIT'
-        },
-        {
-          id: 'workout_2',
-          title: 'Evening Strength Training',
-          startTime: new Date(Date.now() - 24 * 3600000).toISOString(),
-          durationMinutes: 60,
-          caloriesBurned: 350,
-          type: 'Weights'
-        }
-      ];
+      return [];
     }
 
     try {

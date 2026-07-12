@@ -1,106 +1,109 @@
 import { registerPlugin, Capacitor } from '@capacitor/core';
+import { HealthConnect as NativeHealthConnect } from '@pianissimoproject/capacitor-health-connect';
 
 const HealthConnectNative = registerPlugin('HealthConnect');
 
-const mockImplementation = {
-  checkAvailability: async () => {
-    console.warn('Health Connect: Using JS mock implementation');
-    return { availability: 'Available' };
-  },
-  requestPermission: async () => {
-    console.warn('Health Connect: Simulating permissions grant');
-    return {};
-  },
-  readRecords: async (options) => {
-    console.warn('Health Connect: Reading mock records for', options.type);
-    const now = new Date();
-    if (options.type === 'steps') {
-      return {
-        records: [
-          { count: 4200, startTime: now.toISOString(), endTime: now.toISOString() },
-          { count: 2642, startTime: now.toISOString(), endTime: now.toISOString() }
-        ]
-      };
-    } else if (options.type === 'sleep') {
-      return {
-        records: [
-          {
-            id: 'sleep_1',
-            startTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 1).toISOString(),
-            endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 1 + 8 * 60 * 60 * 1000).toISOString(),
-            durationMinutes: 480,
-            stage: 'Deep Sleep'
-          },
-          {
-            id: 'sleep_2',
-            startTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 2).toISOString(),
-            endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000 * 2 + 7.5 * 60 * 60 * 1000).toISOString(),
-            durationMinutes: 450,
-            stage: 'Light Sleep'
-          }
-        ]
-      };
-    } else if (options.type === 'exercise') {
-      return {
-        records: [
-          {
-            id: 'workout_1',
-            title: 'HIIT Cardio Session',
-            startTime: new Date(Date.now() - 3 * 3600000).toISOString(),
-            durationMinutes: 45,
-            caloriesBurned: 420,
-            type: 'HIIT'
-          },
-          {
-            id: 'workout_2',
-            title: 'Evening Strength Training',
-            startTime: new Date(Date.now() - 24 * 3600000).toISOString(),
-            durationMinutes: 60,
-            caloriesBurned: 350,
-            type: 'Weights'
-          }
-        ]
-      };
+// We adapt the native plugin's API to the mock's original API names expected by the app.
+// Note: We use actual native Health Connect data without mock fallbacks!
+const HealthConnect = {
+  async checkAvailability() {
+    if (!Capacitor.isNativePlatform()) {
+      return { availability: 'NotSupported' };
     }
-    return { records: [] };
-  }
-};
-
-const proxyHandler = {
-  get(target, prop) {
     const isPluginAvailable = Capacitor.isPluginAvailable('HealthConnect');
-    if (Capacitor.isNativePlatform() && isPluginAvailable) {
-      return async (...args) => {
-        try {
-          if (target[prop]) {
-            return await target[prop](...args);
-          } else {
-            throw new Error(`Method ${prop} not found on native HealthConnect`);
-          }
-        } catch (e) {
-          console.warn(`Native HealthConnect.${prop} failed:`, e);
-          const mockResult = await mockImplementation[prop](...args);
-          if (mockResult && typeof mockResult === 'object') {
-            mockResult._nativeError = e.message || String(e);
-            mockResult._nativeFailed = true;
-          }
-          return mockResult;
+    if (!isPluginAvailable) {
+      return { availability: 'NotSupported' };
+    }
+    try {
+      const res = await NativeHealthConnect.checkAvailability();
+      return { availability: res.availability };
+    } catch (e) {
+      console.error('Native HealthConnect.checkAvailability failed:', e);
+      return { availability: 'NotSupported' };
+    }
+  },
+
+  async requestPermission(options) {
+    if (!Capacitor.isNativePlatform()) {
+      return { grantedPermissions: [], hasAllPermissions: false };
+    }
+    const isPluginAvailable = Capacitor.isPluginAvailable('HealthConnect');
+    if (!isPluginAvailable) {
+      return { grantedPermissions: [], hasAllPermissions: false };
+    }
+
+    const readTypes = [];
+    if (options && options.read) {
+      if (options.read.includes('steps')) readTypes.push('Steps');
+      if (options.read.includes('weight')) readTypes.push('Weight');
+      if (options.read.includes('height')) readTypes.push('Height');
+      // Sleep and Exercise are not supported natively in this plugin's RecordType.
+    }
+
+    try {
+      return await NativeHealthConnect.requestHealthPermissions({
+        read: readTypes,
+        write: []
+      });
+    } catch (e) {
+      console.error('Native HealthConnect.requestHealthPermissions failed:', e);
+      throw e;
+    }
+  },
+
+  async readRecords(options) {
+    if (!Capacitor.isNativePlatform()) {
+      return { records: [] };
+    }
+    const isPluginAvailable = Capacitor.isPluginAvailable('HealthConnect');
+    if (!isPluginAvailable) {
+      return { records: [] };
+    }
+
+    const typeMap = {
+      steps: 'Steps',
+      weight: 'Weight',
+      height: 'Height'
+    };
+
+    const nativeType = typeMap[options.type];
+    if (!nativeType) {
+      // Sleep and exercise are not supported natively, return empty instead of mock data!
+      return { records: [] };
+    }
+
+    try {
+      const res = await NativeHealthConnect.readRecords({
+        type: nativeType,
+        timeRangeFilter: {
+          type: 'between',
+          startTime: new Date(options.startTime),
+          endTime: new Date(options.endTime)
         }
-      };
-    } else {
-      return async (...args) => {
-        const mockResult = await mockImplementation[prop](...args);
-        if (mockResult && typeof mockResult === 'object') {
-          mockResult._nativeError = !isPluginAvailable
-            ? 'Health Connect plugin is not natively implemented or registered on this Android app build.'
-            : 'Health Connect is not supported on non-Android platforms (running on Web/Desktop)';
-          mockResult._nativeFailed = true;
+      });
+
+      const mappedRecords = (res.records || []).map(record => {
+        if (nativeType === 'Steps') {
+          return {
+            count: record.count,
+            startTime: record.startTime,
+            endTime: record.endTime
+          };
+        } else if (nativeType === 'Weight') {
+          return {
+            weight: record.weight ? record.weight.value : 0,
+            time: record.time
+          };
         }
-        return mockResult;
-      };
+        return record;
+      });
+
+      return { records: mappedRecords };
+    } catch (e) {
+      console.error(`Native HealthConnect.readRecords for ${options.type} failed:`, e);
+      return { records: [] }; // No mock fallback!
     }
   }
 };
 
-const HealthConnect = new Proxy(HealthConnectNative, proxyHandler);
 export { HealthConnect };

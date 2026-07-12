@@ -124,7 +124,7 @@
 
   <!-- API Key Onboarding Fullscreen Modal -->
   <div *ngIf="!hasApiKey" class="onboarding-overlay" style="z-index: 100; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-primary); display: flex; align-items: center; justify-content: center; padding: 20px;">
-    <div class="glass-card animate-fade-up" style="width: 100%; max-width: 420px; border-radius: var(--radius-expressive-lg); padding: 32px 24px; box-shadow: var(--shadow-premium);">
+    <div class="glass-card animate-fade-up" style="width: 100%; max-width: 440px; border-radius: var(--radius-expressive-lg); padding: 32px 24px; box-shadow: var(--shadow-premium); max-height: 90vh; overflow-y: auto;">
       <div style="text-align: center; margin-bottom: 20px;">
         <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--color-calories) 0%, var(--color-carbs) 100%); margin-bottom: 16px;">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -132,34 +132,93 @@
           </svg>
         </div>
         <h2 style="font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em;">Welcome to Vitality</h2>
-        <p style="margin-top: 8px;">Let's initialize your Gemini API Key to enable instant food vision logging.</p>
+        <p style="margin-top: 8px; font-size: 0.95rem; color: var(--text-muted);">Configure your personal parameters to customize your tracking experience.</p>
       </div>
 
-      <!-- Quick Instructions Summary -->
-      <div style="margin-bottom: 24px; text-align: left; background-color: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 16px; border-radius: var(--radius-expressive-md);">
-        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700; color: var(--text-primary);">How to get an API Key:</h3>
-        <ol style="margin-left: 20px; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
-          <li>Visit <a href="https://aistudio.google.com/" target="_blank" style="color: var(--color-calories); font-weight: 600; text-decoration: underline;">Google AI Studio</a> (Free to start)</li>
-          <li>Sign in with your Google account.</li>
-          <li>Click <strong>"Get API Key"</strong> and copy your key.</li>
-        </ol>
+      <!-- Profile Section in Onboarding -->
+      <div style="text-align: left; margin-bottom: 24px; display: flex; flex-direction: column; gap: 14px;">
+        <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-protein); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">1. Set Up Profile</h3>
+        
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Name</label>
+          <input type="text" class="form-input" [(ngModel)]="profileName" placeholder="Your name...">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Age (Years)</label>
+            <input type="number" class="form-input" [(ngModel)]="profileAge" min="1" max="120">
+          </div>
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Gender</label>
+            <select class="form-input" [(ngModel)]="profileGender" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Weight (kg)</label>
+            <input type="number" class="form-input" [(ngModel)]="profileWeight" min="20" max="300">
+          </div>
+          <div class="input-group">
+            <label style="font-size: 0.75rem;">Height (cm)</label>
+            <input type="number" class="form-input" [(ngModel)]="profileHeight" min="50" max="250">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Activity Level</label>
+          <select class="form-input" [(ngModel)]="profileActivity" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+            <option value="Sedentary">Sedentary (No Exercise)</option>
+            <option value="Lightly Active">Lightly Active (1-3 Days/Wk)</option>
+            <option value="Moderately Active">Moderately Active (3-5 Days/Wk)</option>
+            <option value="Very Active">Very Active (6-7 Days/Wk)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label style="font-size: 0.75rem;">Weight Goal</label>
+          <select class="form-input" [(ngModel)]="profileGoal" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+            <option value="Lose Weight">Lose Weight (-500 kcal)</option>
+            <option value="Maintain Weight">Maintain Weight (TDEE)</option>
+            <option value="Gain Weight">Gain Weight (+500 kcal)</option>
+          </select>
+        </div>
+
+        <!-- Health Sync Mode Options -->
+        <div class="input-group" style="margin-top: 6px;">
+          <label style="font-size: 0.75rem;">Health Connect Source</label>
+          <select class="form-input" [(ngModel)]="healthMode" style="height: 54px; padding: 12px 16px; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: var(--radius-expressive-md); outline: none;">
+            <option value="sync">Automatic Health Connect Sync</option>
+            <option value="manual">Manual Input Override (No Mocks)</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Single-Step API Key Input -->
-      <div class="input-group" style="text-align: left; margin-bottom: 24px;">
-        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; display: block;">Gemini API Key</label>
-        <input type="password" class="form-input" [(ngModel)]="apiKeyInput" placeholder="Paste your AIzaSy... key here" style="width: 100%;">
+      <!-- API Key Section in Onboarding -->
+      <div style="text-align: left; margin-bottom: 24px; border-top: 1px solid var(--glass-border); padding-top: 16px;">
+        <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-calories); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">2. API Configuration</h3>
+        
+        <div class="input-group" style="margin-bottom: 16px;">
+          <label style="font-size: 0.75rem;">Gemini API Key</label>
+          <input type="password" class="form-input" [(ngModel)]="apiKeyInput" placeholder="Paste your AIzaSy... key here">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
+            Get a free key from <a href="https://aistudio.google.com/" target="_blank" style="color: var(--color-calories); font-weight: 600; text-decoration: underline;">Google AI Studio</a>.
+          </div>
+        </div>
       </div>
 
-      <!-- Access Dashboard Button -->
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <button class="btn-primary" (click)="saveApiKey()" [disabled]="!apiKeyInput.trim()" style="width: 100%;">
-          Access Dashboard
-        </button>
-      </div>
+      <!-- Save & Proceed Button -->
+      <button class="btn-primary" (click)="saveSettingsConfig()" [disabled]="!apiKeyInput.trim()" style="width: 100%;">
+        Save & Get Started
+      </button>
 
       <div style="text-align: center; margin-top: 20px;">
-        <button style="background: none; border: none; color: var(--color-carbs); font-weight: 600; cursor: pointer; font-size: 0.85rem;" (click)="apiKeyInput = 'AIzaSyMockKeyForWebTesting'; saveApiKey();">
+        <button style="background: none; border: none; color: var(--color-carbs); font-weight: 600; cursor: pointer; font-size: 0.85rem;" (click)="apiKeyInput = 'AIzaSyMockKeyForWebTesting'; saveSettingsConfig();">
           Set mock testing key (Bypasses Onboarding)
         </button>
       </div>
@@ -301,6 +360,57 @@
           <div>C: <span class="text-carbs">{{ latestAnalysis.carbs }}g</span></div>
           <div>F: <span class="text-fat">{{ latestAnalysis.fat }}g</span></div>
         </div>
+      </div>
+    </div>
+
+    <!-- AI Chat Logger Card -->
+    <div class="glass-card">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background-color: hsla(239, 84%, 67%, 0.15); display: flex; align-items: center; justify-content: center;" class="text-protein">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 style="font-size: 1.25rem;">AI Chat Assistant</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Log foods by typing or dictating what you ate</p>
+        </div>
+      </div>
+
+      <!-- Quick suggestions -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" (click)="chatInputText = 'I had 2 boiled eggs and 1 slice of wheat toast'">
+          2 Eggs & Toast
+        </button>
+        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" (click)="chatInputText = 'Log 450 calories, 35g protein, 40g carbs'">
+          Direct: 450 kcal
+        </button>
+        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" (click)="chatInputText = 'Add 1 cup of white rice and 150g grilled chicken breast'">
+          Rice & Chicken
+        </button>
+      </div>
+
+      <!-- Input box -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <textarea class="form-input" [(ngModel)]="chatInputText" placeholder="Example: I ate a bowl of oatmeal with a handful of blueberries and a scoop of protein powder..." style="width: 100%; min-height: 80px; resize: none; font-size: 0.95rem; line-height: 1.4; padding: 12px; border-radius: var(--radius-expressive-md);"></textarea>
+        
+        <div *ngIf="chatError" style="font-size: 0.8rem; color: var(--color-fat); padding: 8px 12px; background-color: hsla(350, 89%, 60%, 0.1); border-radius: 8px; border-left: 3px solid var(--color-fat);">
+          {{ chatError }}
+        </div>
+
+        <button class="btn-primary" (click)="logFoodViaChat()" [disabled]="isChatLogging || !chatInputText.trim()" style="background: linear-gradient(135deg, var(--color-protein) 0%, hsl(239, 70%, 50%) 100%); box-shadow: 0 8px 24px -6px hsla(239, 84%, 67%, 0.35); color: white; width: 100%; margin-top: 8px;">
+          <span *ngIf="!isChatLogging" style="display: flex; align-items: center; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Analyze & Log Meal
+          </span>
+          <span *ngIf="isChatLogging" style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: 0.8s linear infinite rotate;" class="spinner"></div>
+            Consulting Gemini...
+          </span>
+        </button>
       </div>
     </div>
 

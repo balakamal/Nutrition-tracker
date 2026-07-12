@@ -67,6 +67,11 @@ export class AppComponent implements OnInit {
   uploadedFileName: string | null = null;
   latestAnalysis: FoodAnalysisResult | null = null;
 
+  // Chat Logging State
+  chatInputText = '';
+  isChatLogging = false;
+  chatError: string | null = null;
+
   // Pre-coded demo image base64 strings to facilitate instant testing
   demoFoods = [
     {
@@ -479,5 +484,22 @@ export class AppComponent implements OnInit {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Chat Logging Operation
+  async logFoodViaChat(): Promise<void> {
+    if (!this.chatInputText.trim()) return;
+    this.isChatLogging = true;
+    this.chatError = null;
+    try {
+      const result = await this.geminiService.analyzeFoodText(this.chatInputText);
+      this.addFoodLog(result);
+      this.chatInputText = '';
+    } catch (e: any) {
+      console.error('Failed to log food via chat:', e);
+      this.chatError = e.message || 'Failed to parse text entry. Please try again.';
+    } finally {
+      this.isChatLogging = false;
+    }
   }
 }

@@ -128,4 +128,78 @@ The JSON format MUST be exactly:
       throw error;
     }
   }
+
+  /**
+   * Analyzes food text entry using Gemini and returns parsed nutritional estimates.
+   */
+  async analyzeFoodText(textPrompt: string): Promise<FoodAnalysisResult> {
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      throw new Error('Gemini API key is not configured.');
+    }
+
+    const systemPrompt = `Analyze the following text input describing a meal or direct calorie/macro logging request.
+If the input describes a meal (e.g. "I had a cup of rice and 100g of chicken breast"), estimate the calories and macronutrients (protein, carbs, fat in grams).
+If the input specifies direct values (e.g. "Add 500 calories, 40g protein" or "log 300 kcal"), parse those values exactly. Set missing macros to reasonable estimates or 0.
+Respond ONLY with a JSON object. Do not include markdown formatting or wrappers (like \`\`\`json).
+The JSON format MUST be exactly:
+{
+  "mealName": "Short descriptive name of the food/entry",
+  "calories": 450,
+  "protein": 25,
+  "carbs": 40,
+  "fat": 15,
+  "description": "Brief description of the logged items and values."
+}`;
+
+    const requestBody = {
+      contents: [
+        {
+          parts: [
+            { text: systemPrompt },
+            { text: `User input: "${textPrompt}"` }
+          ]
+        }
+      ],
+      generationConfig: {
+        responseMimeType: 'application/json'
+      }
+    };
+
+    try {
+      const response = await fetch(`${this.apiEndpoint}?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+      }
+
+      const responseData = await response.json();
+      const textResponse = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (!textResponse) {
+        throw new Error('No content returned from Gemini.');
+      }
+
+      const parsedResult: FoodAnalysisResult = JSON.parse(textResponse.trim());
+      
+      return {
+        mealName: parsedResult.mealName || 'Text Logged Food',
+        calories: Number(parsedResult.calories) || 0,
+        protein: Number(parsedResult.protein) || 0,
+        carbs: Number(parsedResult.carbs) || 0,
+        fat: Number(parsedResult.fat) || 0,
+        description: parsedResult.description || 'Logged via Chat.'
+      };
+    } catch (error) {
+      console.error('Error analyzing food text with Gemini:', error);
+      throw error;
+    }
+  }
 }
