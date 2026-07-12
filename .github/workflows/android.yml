@@ -24,7 +24,7 @@ jobs:
 
       # Step 3: Install Package Dependencies
       - name: Install NPM Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       # Step 4: Build Angular Production Web Assets
       - name: Build Angular Web Assets
