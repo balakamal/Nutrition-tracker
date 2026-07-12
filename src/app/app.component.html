@@ -6,12 +6,27 @@
       <h1 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VITALITY</h1>
     </div>
     
-    <button class="btn-secondary" style="padding: 10px 14px; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;" (click)="showSettings = !showSettings" title="Settings">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-      </svg>
-    </button>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <!-- Theme Toggle Pill -->
+      <div class="theme-toggle-group" style="display: flex; background: var(--bg-secondary); padding: 4px; border-radius: var(--radius-pill); border: 1px solid var(--glass-border);">
+        <button class="btn-theme-toggle" [class.active]="activeTheme === 'light'" (click)="setTheme('light')" title="Light Mode">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+        <button class="btn-theme-toggle" [class.active]="activeTheme === 'dark'" (click)="setTheme('dark')" title="Dark Mode">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <button class="btn-theme-toggle" [class.active]="activeTheme === 'system'" (click)="setTheme('system')" title="System Theme">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        </button>
+      </div>
+
+      <button class="btn-secondary" style="padding: 10px 14px; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;" (click)="showSettings = !showSettings" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <!-- Settings Dialog Overlay -->
@@ -39,7 +54,7 @@
   <!-- API Key Onboarding Fullscreen Modal -->
   <div *ngIf="!hasApiKey" class="onboarding-overlay" style="z-index: 100; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-primary); display: flex; align-items: center; justify-content: center; padding: 20px;">
     <div class="glass-card animate-fade-up" style="width: 100%; max-width: 420px; border-radius: var(--radius-expressive-lg); padding: 32px 24px; box-shadow: var(--shadow-premium);">
-      <div style="text-align: center; margin-bottom: 28px;">
+      <div style="text-align: center; margin-bottom: 20px;">
         <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--color-calories) 0%, var(--color-carbs) 100%); margin-bottom: 16px;">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
@@ -49,61 +64,25 @@
         <p style="margin-top: 8px;">Let's initialize your Gemini API Key to enable instant food vision logging.</p>
       </div>
 
-      <!-- Step Indicator Bar -->
-      <div style="display: flex; justify-content: space-between; margin-bottom: 28px; position: relative;">
-        <div style="position: absolute; height: 3px; background-color: var(--bg-tertiary); top: 12px; left: 10px; right: 10px; z-index: 1;"></div>
-        <div [style.width.%]="(onboardingStep - 1) * 33" style="position: absolute; height: 3px; background-color: var(--color-calories); top: 12px; left: 10px; z-index: 2; transition: var(--transition-smooth);"></div>
-        
-        <div *ngFor="let s of [1, 2, 3, 4]" 
-             [style.background-color]="onboardingStep >= s ? 'var(--color-calories)' : 'var(--bg-tertiary)'"
-             [style.color]="onboardingStep >= s ? 'black' : 'var(--text-secondary)'"
-             style="width: 28px; height: 28px; border-radius: 50%; z-index: 3; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; transition: var(--transition-smooth);">
-          {{ s }}
-        </div>
+      <!-- Quick Instructions Summary -->
+      <div style="margin-bottom: 24px; text-align: left; background-color: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 16px; border-radius: var(--radius-expressive-md);">
+        <h3 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 700; color: var(--text-primary);">How to get an API Key:</h3>
+        <ol style="margin-left: 20px; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
+          <li>Visit <a href="https://aistudio.google.com/" target="_blank" style="color: var(--color-calories); font-weight: 600; text-decoration: underline;">Google AI Studio</a> (Free to start)</li>
+          <li>Sign in with your Google account.</li>
+          <li>Click <strong>"Get API Key"</strong> and copy your key.</li>
+        </ol>
       </div>
 
-      <!-- Step Content Switcher -->
-      <div style="min-height: 160px; margin-bottom: 24px;">
-        <div *ngIf="onboardingStep === 1" class="animate-fade-up">
-          <h3 style="margin-bottom: 8px;">Step 1: Visit Google AI Studio</h3>
-          <p style="line-height: 1.5;">First, navigate to Google AI Studio where you can create your personal API key for Google's latest models.</p>
-          <div style="margin-top: 16px;">
-            <a href="https://aistudio.google.com/" target="_blank" class="btn-secondary" style="width: 100%; text-decoration: none;">
-              Open AI Studio
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <div *ngIf="onboardingStep === 2" class="animate-fade-up">
-          <h3 style="margin-bottom: 8px;">Step 2: Sign In</h3>
-          <p style="line-height: 1.5;">Sign in with a standard Google Account. No credit card, payment details, or enterprise cloud setup are required to start.</p>
-        </div>
-
-        <div *ngIf="onboardingStep === 3" class="animate-fade-up">
-          <h3 style="margin-bottom: 8px;">Step 3: Create API Key</h3>
-          <p style="line-height: 1.5;">Click the prominent <strong>"Get API Key"</strong> or <strong>"Create API Key"</strong> button, choose or create a project, and authorize key creation.</p>
-        </div>
-
-        <div *ngIf="onboardingStep === 4" class="animate-fade-up">
-          <h3 style="margin-bottom: 8px;">Step 4: Paste & Run</h3>
-          <p style="margin-bottom: 16px;">Copy the key string (starts with "AIzaSy") and paste it below to save it securely in local storage.</p>
-          
-          <div class="input-group">
-            <input type="password" class="form-input" [(ngModel)]="apiKeyInput" placeholder="Paste API Key here...">
-          </div>
-        </div>
+      <!-- Single-Step API Key Input -->
+      <div class="input-group" style="text-align: left; margin-bottom: 24px;">
+        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; display: block;">Gemini API Key</label>
+        <input type="password" class="form-input" [(ngModel)]="apiKeyInput" placeholder="Paste your AIzaSy... key here" style="width: 100%;">
       </div>
 
-      <!-- Modal Footer Navigation -->
-      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-        <button class="btn-secondary" *ngIf="onboardingStep > 1" (click)="prevOnboardingStep()" style="flex: 1;">
-          Back
-        </button>
-        <button class="btn-primary" *ngIf="onboardingStep < 4" (click)="nextOnboardingStep()" style="flex: 2;">
-          Next Step
-        </button>
-        <button class="btn-primary" *ngIf="onboardingStep === 4" (click)="saveApiKey()" [disabled]="!apiKeyInput.trim()" style="flex: 2;">
+      <!-- Access Dashboard Button -->
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button class="btn-primary" (click)="saveApiKey()" [disabled]="!apiKeyInput.trim()" style="width: 100%;">
           Access Dashboard
         </button>
       </div>
@@ -275,7 +254,7 @@
         
         <!-- Status indicator pill -->
         <span *ngIf="healthConnectStatus === 'Available'" style="font-size: 0.75rem; font-weight: 700; background-color: hsla(145, 75%, 48%, 0.15); color: var(--color-calories); padding: 4px 10px; border-radius: 12px;">
-          Linked
+          {{ healthConnectIsMocked ? 'Simulated' : 'Linked' }}
         </span>
         <span *ngIf="healthConnectStatus === 'NotInstalled'" style="font-size: 0.75rem; font-weight: 700; background-color: hsla(25, 95%, 58%, 0.15); color: var(--color-protein); padding: 4px 10px; border-radius: 12px;">
           Not Installed
@@ -283,6 +262,12 @@
         <span *ngIf="healthConnectStatus === 'NotSupported'" style="font-size: 0.75rem; font-weight: 700; background-color: hsla(0, 75%, 45%, 0.15); color: #ff8a80; padding: 4px 10px; border-radius: 12px;">
           Unsupported
         </span>
+      </div>
+
+      <!-- Verbose status description/reason -->
+      <div *ngIf="healthConnectReason" style="font-size: 0.8rem; margin-top: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background-color: rgba(255,255,255,0.03); color: var(--text-secondary); border-left: 3px solid; line-height: 1.45;"
+           [style.border-color]="healthConnectStatus === 'Available' ? 'var(--color-calories)' : (healthConnectStatus === 'NotInstalled' ? 'var(--color-protein)' : 'var(--color-fat)')">
+        {{ healthConnectReason }}
       </div>
 
       <!-- If permission rationale required or not linked -->
@@ -358,7 +343,16 @@
 
     <!-- Food Log History list -->
     <div class="glass-card" style="margin-bottom: 0;">
-      <h2 style="font-size: 1.25rem; margin-bottom: 16px;">Daily Logs</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 1.25rem; margin: 0;">Daily Logs</h2>
+        <button *ngIf="foodLogs.length > 0" (click)="clearFoodLogs()" style="background: none; border: none; color: var(--color-fat); font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; transition: var(--transition-smooth);" class="btn-clear-logs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Clear Logs
+        </button>
+      </div>
       <div style="display: flex; flex-direction: column; gap: 12px;">
         <div *ngFor="let log of foodLogs" style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--radius-expressive-md); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
           <div style="max-width: 70%;">

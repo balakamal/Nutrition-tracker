@@ -4,39 +4,92 @@
 :root {
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* Color Palette (HSL Tailored Dark Mode) */
-  --bg-primary: hsl(225, 25%, 8%);
-  --bg-secondary: hsl(225, 20%, 14%);
-  --bg-tertiary: hsl(225, 18%, 20%);
-  --bg-surface: hsl(225, 22%, 11%);
-  
-  --glass-bg: hsla(225, 20%, 14%, 0.65);
-  --glass-border: hsla(0, 0%, 100%, 0.08);
-  --glass-glow: hsla(0, 0%, 100%, 0.03);
-
-  --text-primary: hsl(0, 0%, 96%);
-  --text-secondary: hsl(225, 12%, 75%);
-  --text-muted: hsl(225, 8%, 55%);
-
-  /* Material 3 Expressive Accent Colors */
-  --color-calories: hsl(145, 75%, 48%);       /* Energetic Green */
-  --color-protein: hsl(25, 95%, 58%);         /* Coral / Orange */
-  --color-carbs: hsl(200, 95%, 52%);          /* Ocean Blue */
-  --color-fat: hsl(280, 85%, 65%);            /* Royal Purple */
-  --color-steps: hsl(45, 95%, 50%);           /* Vibrant Gold */
-  --color-sleep: hsl(195, 85%, 55%);          /* Sky Cyan */
-  --color-workout: hsl(335, 85%, 55%);        /* Punchy Pink */
-
-  /* Asymmetrical Material 3 Shapes */
-  --radius-expressive-lg: 36px 12px 36px 36px;
-  --radius-expressive-md: 24px 8px 24px 24px;
+  /* Symmetrical Clean Radii */
+  --radius-expressive-lg: 24px;
+  --radius-expressive-md: 16px;
   --radius-pill: 9999px;
   
   /* Standard Shadows & Transitions */
-  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
-  --shadow-glow-calories: 0 0 20px hsla(145, 75%, 48%, 0.15);
-  --transition-smooth: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
+  --shadow-glow-calories: 0 0 24px hsla(162, 72%, 46%, 0.15);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* DEFAULT / DARK THEME TOKENS */
+  --bg-primary: hsl(220, 24%, 6%);
+  --bg-secondary: hsl(220, 20%, 11%);
+  --bg-tertiary: hsl(220, 16%, 16%);
+  --bg-surface: hsl(220, 22%, 8%);
+  
+  --glass-bg: hsla(220, 20%, 11%, 0.7);
+  --glass-border: hsla(0, 0%, 100%, 0.08);
+  --glass-glow: hsla(0, 0%, 100%, 0.02);
+
+  --text-primary: hsl(0, 0%, 96%);
+  --text-secondary: hsl(220, 14%, 74%);
+  --text-muted: hsl(220, 10%, 54%);
+
+  /* Professional Premium Palette */
+  --color-calories: hsl(162, 72%, 46%);       /* Emerald Mint */
+  --color-protein: hsl(239, 84%, 67%);        /* Royal Indigo */
+  --color-carbs: hsl(38, 92%, 50%);           /* Amber Gold */
+  --color-fat: hsl(350, 89%, 60%);            /* Coral Pink */
+  --color-steps: hsl(172, 66%, 50%);          /* Ocean Teal */
+  --color-sleep: hsl(235, 85%, 74%);          /* Soft Lavender */
+  --color-workout: hsl(25, 95%, 53%);         /* Sunset Orange */
+}
+
+/* Explicit Dark Theme (identical to root defaults) */
+[data-theme="dark"] {
+  --bg-primary: hsl(220, 24%, 6%);
+  --bg-secondary: hsl(220, 20%, 11%);
+  --bg-tertiary: hsl(220, 16%, 16%);
+  --bg-surface: hsl(220, 22%, 8%);
+  
+  --glass-bg: hsla(220, 20%, 11%, 0.7);
+  --glass-border: hsla(0, 0%, 100%, 0.08);
+  --glass-glow: hsla(0, 0%, 100%, 0.02);
+
+  --text-primary: hsl(0, 0%, 96%);
+  --text-secondary: hsl(220, 14%, 74%);
+  --text-muted: hsl(220, 10%, 54%);
+  
+  --color-calories: hsl(162, 72%, 46%);
+  --color-protein: hsl(239, 84%, 67%);
+  --color-carbs: hsl(38, 92%, 50%);
+  --color-fat: hsl(350, 89%, 60%);
+  --color-steps: hsl(172, 66%, 50%);
+  --color-sleep: hsl(235, 85%, 74%);
+  --color-workout: hsl(25, 95%, 53%);
+  
+  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+/* Explicit Light Theme (high-end elegant card system) */
+[data-theme="light"] {
+  --bg-primary: hsl(220, 20%, 96%);
+  --bg-secondary: hsl(220, 18%, 91%);
+  --bg-tertiary: hsl(220, 15%, 86%);
+  --bg-surface: hsl(0, 0%, 100%);
+  
+  --glass-bg: hsla(220, 18%, 97%, 0.85);
+  --glass-border: hsla(220, 12%, 10%, 0.08);
+  --glass-glow: hsla(0, 0%, 0%, 0.01);
+
+  --text-primary: hsl(220, 28%, 12%);
+  --text-secondary: hsl(220, 16%, 32%);
+  --text-muted: hsl(220, 10%, 50%);
+
+  /* Muted Elegant Accents for Light Mode */
+  --color-calories: hsl(162, 75%, 35%);
+  --color-protein: hsl(239, 65%, 50%);
+  --color-carbs: hsl(38, 90%, 40%);
+  --color-fat: hsl(350, 75%, 50%);
+  --color-steps: hsl(172, 70%, 36%);
+  --color-sleep: hsl(235, 60%, 55%);
+  --color-workout: hsl(25, 80%, 42%);
+  
+  --shadow-premium: 0 16px 40px -10px rgba(22, 31, 48, 0.08);
 }
 
 /* Global Reset & Base Styles */
@@ -236,4 +289,35 @@ p {
 
 .animate-fade-up {
   animation: slideInUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* Theme Toggle Button Styling */
+.btn-theme-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.btn-theme-toggle:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+}
+
+.btn-theme-toggle.active {
+  color: var(--bg-surface) !important;
+  background-color: var(--text-primary) !important;
+}
+
+/* Clear logs hover transition */
+.btn-clear-logs:hover {
+  background-color: hsla(350, 89%, 60%, 0.1) !important;
+  color: var(--color-fat) !important;
 }

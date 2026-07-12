@@ -46,15 +46,15 @@ jobs:
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x android/gradlew
 
-      # Step 8: Build Debug APK via Gradle
-      - name: Compile Android Debug APK
-        run: ./gradlew assembleDebug
+      # Step 8: Build Signed Release APK via Gradle
+      - name: Compile Android Release APK
+        run: ./gradlew assembleRelease
         working-directory: android
 
       # Step 9: Upload Compiled Artifact
-      - name: Upload Debug APK Artifact
+      - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 7

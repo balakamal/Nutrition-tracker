@@ -13,7 +13,7 @@ export interface FoodAnalysisResult {
   providedIn: 'root'
 })
 export class GeminiService {
-  private apiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  private apiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent';
 
   constructor() {}
 

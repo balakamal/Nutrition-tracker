@@ -2,6 +2,12 @@ import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { HealthConnect } from '@capacitor-community/health-connect';
 
+export interface HealthAvailability {
+  status: 'Available' | 'NotInstalled' | 'NotSupported' | 'Checking';
+  reason?: string;
+  isMocked: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,22 +17,56 @@ export class HealthConnectService {
   constructor() {}
 
   /**
-   * Checks the Health Connect OS-level availability.
-   * On web, it simulates availability.
+   * Checks the Health Connect OS-level availability with detailed diagnostics.
    */
-  async checkAvailability(): Promise<'Available' | 'NotInstalled' | 'NotSupported'> {
+  async checkDetailedAvailability(): Promise<HealthAvailability> {
     if (!this.isAndroid) {
-      console.warn('Health Connect is only available on Android. Simulating Available state.');
-      return 'Available';
+      return {
+        status: 'Available',
+        reason: 'Running in Web environment (automatically falling back to mock data simulation).',
+        isMocked: true
+      };
     }
 
     try {
       const result = await HealthConnect.checkAvailability();
-      return result.availability;
-    } catch (error) {
+      
+      let reason = '';
+      let isMocked = false;
+      
+      // If our JS proxy fallback caught a native failure, mark it.
+      if ((result as any)._nativeFailed) {
+        reason = `Native Health Connect failed: ${(result as any)._nativeError || 'Unknown native error'}. Using simulated fallback.`;
+        isMocked = true;
+      } else if (result.availability === 'NotInstalled') {
+        reason = 'Health Connect app is not installed on this Android device. Please install it from the Google Play Store.';
+      } else if (result.availability === 'NotSupported') {
+        reason = 'Health Connect is not supported on this Android OS version. Requires Android 8.0 (API 26) or higher.';
+      } else {
+        reason = 'Health Connect is active and connected natively.';
+      }
+
+      return {
+        status: (result as any)._nativeFailed ? 'Available' : result.availability,
+        reason,
+        isMocked
+      };
+    } catch (error: any) {
       console.error('Error checking Health Connect availability:', error);
-      return 'NotSupported';
+      return {
+        status: 'NotSupported',
+        reason: `Failed to initialize Health Connect: ${error.message || error}`,
+        isMocked: true
+      };
     }
+  }
+
+  /**
+   * Checks the Health Connect OS-level availability. (Legacy wrapper)
+   */
+  async checkAvailability(): Promise<'Available' | 'NotInstalled' | 'NotSupported'> {
+    const res = await this.checkDetailedAvailability();
+    return res.status as 'Available' | 'NotInstalled' | 'NotSupported';
   }
 
   /**

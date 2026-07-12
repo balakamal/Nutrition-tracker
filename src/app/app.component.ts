@@ -17,44 +17,31 @@ export class AppComponent implements OnInit {
   // Onboarding / API Key State
   hasApiKey = false;
   apiKeyInput = '';
-  onboardingStep = 1;
   showSettings = false;
+
+  // Active Theme Selection
+  activeTheme: 'light' | 'dark' | 'system' = 'system';
 
   // Nutrition Goal and Intake State
   targetCalories = 2500;
-  consumedCalories = 1250;
+  consumedCalories = 0;
   
   targetProtein = 150;
-  consumedProtein = 85;
+  consumedProtein = 0;
   
   targetCarbs = 275;
-  consumedCarbs = 140;
+  consumedCarbs = 0;
   
   targetFat = 80;
-  consumedFat = 42;
+  consumedFat = 0;
 
   // Food Log History
-  foodLogs: FoodAnalysisResult[] = [
-    {
-      mealName: 'Greek Yogurt Bowl',
-      calories: 320,
-      protein: 24,
-      carbs: 38,
-      fat: 8,
-      description: 'Greek yogurt with honey, granola, and mixed berries.'
-    },
-    {
-      mealName: 'Grilled Chicken Salad',
-      calories: 450,
-      protein: 42,
-      carbs: 18,
-      fat: 22,
-      description: 'Grilled chicken breast on mixed greens with olive oil dressing.'
-    }
-  ];
+  foodLogs: FoodAnalysisResult[] = [];
 
   // Health Connect Metrics State
   healthConnectStatus: 'Available' | 'NotInstalled' | 'NotSupported' | 'Checking' = 'Checking';
+  healthConnectReason = '';
+  healthConnectIsMocked = false;
   dailySteps = 0;
   sleepSessions: any[] = [];
   workouts: any[] = [];
@@ -98,6 +85,38 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.checkApiKeyConfig();
     this.initHealthConnect();
+    this.loadFoodLogs();
+    this.initTheme();
+  }
+
+  // Theme Management
+  initTheme(): void {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null;
+    this.activeTheme = savedTheme || 'system';
+    this.applyTheme(this.activeTheme);
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', () => {
+      if (this.activeTheme === 'system') {
+        this.applyTheme('system');
+      }
+    });
+  }
+
+  setTheme(theme: 'light' | 'dark' | 'system'): void {
+    this.activeTheme = theme;
+    localStorage.setItem('theme', theme);
+    this.applyTheme(theme);
+  }
+
+  applyTheme(theme: 'light' | 'dark' | 'system'): void {
+    const root = document.documentElement;
+    if (theme === 'system') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    } else {
+      root.setAttribute('data-theme', theme);
+    }
   }
 
   // API Key checks
@@ -108,7 +127,6 @@ export class AppComponent implements OnInit {
       this.apiKeyInput = key ? `••••••••••••••••${key.slice(-4)}` : '';
     } else {
       this.apiKeyInput = '';
-      this.onboardingStep = 1;
     }
   }
 
@@ -125,12 +143,15 @@ export class AppComponent implements OnInit {
     this.geminiService.clearApiKey();
     this.hasApiKey = false;
     this.apiKeyInput = '';
-    this.onboardingStep = 1;
   }
 
   // Health Connect operations
   async initHealthConnect(): Promise<void> {
-    this.healthConnectStatus = await this.healthService.checkAvailability();
+    const detail = await this.healthService.checkDetailedAvailability();
+    this.healthConnectStatus = detail.status;
+    this.healthConnectReason = detail.reason || '';
+    this.healthConnectIsMocked = detail.isMocked;
+
     if (this.healthConnectStatus === 'Available') {
       await this.syncHealthData();
     }
@@ -139,7 +160,7 @@ export class AppComponent implements OnInit {
   async requestHealthConnectPermission(): Promise<void> {
     const granted = await this.healthService.requestPermissions();
     if (granted) {
-      await this.syncHealthData();
+      await this.initHealthConnect();
     }
   }
 
@@ -157,6 +178,62 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Dynamic Data & LocalStorage Persistence
+  loadFoodLogs(): void {
+    const savedLogs = localStorage.getItem('food_logs');
+    if (savedLogs) {
+      try {
+        this.foodLogs = JSON.parse(savedLogs);
+      } catch (e) {
+        console.error('Failed to parse saved food logs, using defaults', e);
+      }
+    } else {
+      // Default initial static logs to make the dashboard look nice on first load
+      this.foodLogs = [
+        {
+          mealName: 'Greek Yogurt Bowl',
+          calories: 320,
+          protein: 24,
+          carbs: 38,
+          fat: 8,
+          description: 'Greek yogurt with honey, granola, and mixed berries.'
+        },
+        {
+          mealName: 'Grilled Chicken Salad',
+          calories: 450,
+          protein: 42,
+          carbs: 18,
+          fat: 22,
+          description: 'Grilled chicken breast on mixed greens with olive oil dressing.'
+        }
+      ];
+      localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+    }
+    this.calculateTotals();
+  }
+
+  calculateTotals(): void {
+    this.consumedCalories = 0;
+    this.consumedProtein = 0;
+    this.consumedCarbs = 0;
+    this.consumedFat = 0;
+
+    this.foodLogs.forEach(log => {
+      this.consumedCalories += log.calories || 0;
+      this.consumedProtein += log.protein || 0;
+      this.consumedCarbs += log.carbs || 0;
+      this.consumedFat += log.fat || 0;
+    });
+  }
+
+  clearFoodLogs(): void {
+    if (confirm('Are you sure you want to clear all logs?')) {
+      this.foodLogs = [];
+      localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+      this.calculateTotals();
+    }
+  }
+
   // Vision Analysis Operations
   async triggerDemoAnalysis(demo: any): Promise<void> {
     this.isAnalyzing = true;
@@ -164,12 +241,10 @@ export class AppComponent implements OnInit {
     this.uploadedFileName = demo.name;
 
     try {
-      // If a real key is present, attempt to analyze. Otherwise, use pre-mocked nutritional details.
       if (this.geminiService.hasApiKey() && !this.geminiService.getApiKey()?.startsWith('AIzaSyMock')) {
         const result = await this.geminiService.analyzeFoodImage(demo.base64, demo.mimeType);
         this.addFoodLog(result);
       } else {
-        // Fallback to demo mock data after a small visual delay
         await new Promise(resolve => setTimeout(resolve, 1500));
         const result: FoodAnalysisResult = {
           mealName: demo.name,
@@ -219,12 +294,8 @@ export class AppComponent implements OnInit {
   addFoodLog(result: FoodAnalysisResult): void {
     this.latestAnalysis = result;
     this.foodLogs.unshift(result);
-    
-    // Add nutrients to current total
-    this.consumedCalories += result.calories;
-    this.consumedProtein += result.protein;
-    this.consumedCarbs += result.carbs;
-    this.consumedFat += result.fat;
+    localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+    this.calculateTotals();
   }
 
   clearLatestAnalysis(): void {
@@ -252,17 +323,5 @@ export class AppComponent implements OnInit {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  nextOnboardingStep(): void {
-    if (this.onboardingStep < 4) {
-      this.onboardingStep++;
-    }
-  }
-
-  prevOnboardingStep(): void {
-    if (this.onboardingStep > 1) {
-      this.onboardingStep--;
-    }
   }
 }
