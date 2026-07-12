@@ -47,6 +47,37 @@ export class GeminiService {
   }
 
   /**
+   * Cleans and parses a JSON response from Gemini, removing any markdown code blocks.
+   */
+  private cleanAndParseJson(text: string): any {
+    let cleanText = text.trim();
+    
+    // Remove markdown code block formatting if present
+    if (cleanText.startsWith('```')) {
+      const firstNewLine = cleanText.indexOf('\n');
+      if (firstNewLine !== -1) {
+        cleanText = cleanText.substring(firstNewLine).trim();
+      }
+      if (cleanText.endsWith('```')) {
+        cleanText = cleanText.substring(0, cleanText.length - 3).trim();
+      }
+    }
+    
+    // Extract JSON block if surrounded by other text
+    try {
+      return JSON.parse(cleanText);
+    } catch (e) {
+      const firstBrace = cleanText.indexOf('{');
+      const lastBrace = cleanText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        const jsonSub = cleanText.substring(firstBrace, lastBrace + 1);
+        return JSON.parse(jsonSub);
+      }
+      throw e;
+    }
+  }
+
+  /**
    * Analyzes an image of food using Gemini Vision and returns nutritional estimates.
    * @param base64Image The base64 string of the image (without the data:image/*;base64 prefix)
    * @param mimeType The mime type of the image, e.g. "image/jpeg"
@@ -111,8 +142,8 @@ The JSON format MUST be exactly:
         throw new Error('No content returned from Gemini.');
       }
 
-      // Parse the JSON response
-      const parsedResult: FoodAnalysisResult = JSON.parse(textResponse.trim());
+      // Parse the JSON response robustly
+      const parsedResult: FoodAnalysisResult = this.cleanAndParseJson(textResponse);
       
       // Ensure all fields are populated correctly with defaults if missing
       return {
@@ -187,7 +218,7 @@ The JSON format MUST be exactly:
         throw new Error('No content returned from Gemini.');
       }
 
-      const parsedResult: FoodAnalysisResult = JSON.parse(textResponse.trim());
+      const parsedResult: FoodAnalysisResult = this.cleanAndParseJson(textResponse);
       
       return {
         mealName: parsedResult.mealName || 'Text Logged Food',
