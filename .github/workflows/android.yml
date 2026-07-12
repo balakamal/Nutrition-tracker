@@ -46,20 +46,16 @@ jobs:
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x android/gradlew
 
-      # Step 8: Verify Kotlin files are present
-      - name: List Kotlin Source Files
-        run: find android/app/src/main/java -name "*.kt" -o -name "*.java" | head -20
-
-      # Step 9: Show app build.gradle contents
-      - name: Show app build.gradle
-        run: cat android/app/build.gradle
-
-      # Step 10: Build Release APK via Gradle with full stacktrace
+      # Step 8: Build Release APK via Gradle
       - name: Compile Android Release APK
-        run: ./gradlew assembleRelease --stacktrace --info 2>&1 | tail -100
+        run: ./gradlew assembleRelease
         working-directory: android
 
-      # Step 11: Upload Compiled Artifact
+      # Step 9: Find and display APK path
+      - name: Find APK
+        run: find android/app/build/outputs -name "*.apk" 2>/dev/null || echo "No APK found"
+
+      # Step 10: Upload Compiled Artifact
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
