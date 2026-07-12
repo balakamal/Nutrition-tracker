@@ -2,7 +2,6 @@ package com.personal.nutritiontracker
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
@@ -15,7 +14,6 @@ import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
-import com.getcapacitor.annotation.ActivityCallback
 import com.getcapacitor.annotation.CapacitorPlugin
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -63,97 +61,67 @@ class HealthConnectPlugin : Plugin() {
 
     @PluginMethod
     fun requestPermission(call: PluginCall) {
-        try {
-            val client = getClient()
-            if (client == null) {
-                call.reject("Health Connect not available on this device")
-                return
-            }
-            activity.lifecycleScope.launch {
-                try {
-                    val granted = client.permissionController.getGrantedPermissions()
-                    if (granted.containsAll(PERMISSIONS)) {
-                        val res = JSObject()
-                        res.put("granted", true)
-                        call.resolve(res)
-                    } else {
-                        // Launch permission request intent
-                        val requestContract = PermissionController.createRequestPermissionResultContract()
-                        val intent = requestContract.createIntent(activity, PERMISSIONS)
-                        startActivityForResult(call, intent, "handlePermissionResult")
-                    }
-                } catch (e: Exception) {
-                    call.reject("Failed to check permissions: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            call.reject("Permission request failed: ${e.message}")
+        val client = getClient()
+        if (client == null) {
+            call.reject("Health Connect not available on this device")
+            return
         }
-    }
-
-    @ActivityCallback
-    private fun handlePermissionResult(call: PluginCall?, result: androidx.activity.result.ActivityResult?) {
-        if (call == null) return
-        try {
-            val client = getClient()
-            if (client == null) {
-                call.reject("Health Connect not available")
-                return
-            }
-            activity.lifecycleScope.launch {
-                try {
-                    val granted = client.permissionController.getGrantedPermissions()
+        activity.lifecycleScope.launch {
+            try {
+                val granted = client.permissionController.getGrantedPermissions()
+                if (granted.containsAll(PERMISSIONS)) {
                     val res = JSObject()
-                    res.put("granted", granted.containsAll(PERMISSIONS))
+                    res.put("granted", true)
                     call.resolve(res)
-                } catch (e: Exception) {
-                    call.reject("Failed to verify permissions: ${e.message}")
+                } else {
+                    // Launch permission request — user must grant in Health Connect UI
+                    val requestPermissions =
+                        PermissionController.createRequestPermissionResultContract()
+                    val intent = requestPermissions.createIntent(activity, PERMISSIONS)
+                    activity.startActivity(intent)
+                    // Resolve with pending state; user must reopen app after granting
+                    val res = JSObject()
+                    res.put("granted", false)
+                    res.put("pending", true)
+                    call.resolve(res)
                 }
+            } catch (e: Exception) {
+                call.reject("Failed to check permissions: ${e.message}")
             }
-        } catch (e: Exception) {
-            call.reject("Permission result handling failed: ${e.message}")
         }
     }
 
     @PluginMethod
     fun getSteps(call: PluginCall) {
-        try {
-            val client = getClient()
-            if (client == null) {
-                val res = JSObject()
-                res.put("steps", 0)
-                res.put("available", false)
-                call.resolve(res)
-                return
-            }
-            activity.lifecycleScope.launch {
-                try {
-                    val now = Instant.now()
-                    val startOfDay = now.truncatedTo(ChronoUnit.DAYS)
-                    val request = ReadRecordsRequest(
-                        recordType = StepsRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startOfDay, now)
-                    )
-                    val response = client.readRecords(request)
-                    val totalSteps = response.records.sumOf { it.count }
-                    val res = JSObject()
-                    res.put("steps", totalSteps)
-                    res.put("available", true)
-                    call.resolve(res)
-                } catch (e: Exception) {
-                    val res = JSObject()
-                    res.put("steps", 0)
-                    res.put("available", false)
-                    res.put("error", e.message ?: "Unknown error")
-                    call.resolve(res)
-                }
-            }
-        } catch (e: Exception) {
+        val client = getClient()
+        if (client == null) {
             val res = JSObject()
             res.put("steps", 0)
             res.put("available", false)
-            res.put("error", e.message ?: "Unknown error")
             call.resolve(res)
+            return
+        }
+        activity.lifecycleScope.launch {
+            try {
+                val now = Instant.now()
+                val startOfDay = now.truncatedTo(ChronoUnit.DAYS)
+                val request = ReadRecordsRequest(
+                    recordType = StepsRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startOfDay, now)
+                )
+                val response = client.readRecords(request)
+                val totalSteps = response.records.sumOf { it.count }
+                val res = JSObject()
+                res.put("steps", totalSteps)
+                res.put("available", true)
+                call.resolve(res)
+            } catch (e: Exception) {
+                val res = JSObject()
+                res.put("steps", 0)
+                res.put("available", false)
+                res.put("error", e.message ?: "Unknown error")
+                call.resolve(res)
+            }
         }
     }
 
@@ -167,8 +135,10 @@ class HealthConnectPlugin : Plugin() {
             if (intent.resolveActivity(activity.packageManager) != null) {
                 activity.startActivity(intent)
             } else {
-                val webIntent = Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata"))
+                val webIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+                )
                 activity.startActivity(webIntent)
             }
             call.resolve()
