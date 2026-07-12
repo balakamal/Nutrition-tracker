@@ -151,11 +151,11 @@ class HealthConnectPlugin : Plugin() {
                 ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> "Running"
                 ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
                 ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Cycling"
-                ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING -> "Swimming"
+                ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Swimming"
+                ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER -> "Swimming"
                 ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> "Yoga"
                 ExerciseSessionRecord.EXERCISE_TYPE_PILATES -> "Pilates"
                 ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> "Strength Training"
-                ExerciseSessionRecord.EXERCISE_TYPE_HIIT -> "HIIT"
                 else -> "Workout"
             }
         } catch (e: Exception) {
