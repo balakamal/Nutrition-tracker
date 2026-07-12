@@ -15,93 +15,93 @@
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* DEFAULT / DARK THEME TOKENS */
-  --bg-primary: hsl(220, 24%, 6%);
-  --bg-secondary: hsl(220, 20%, 11%);
-  --bg-tertiary: hsl(220, 16%, 16%);
-  --bg-surface: hsl(220, 22%, 8%);
+  /* DEFAULT / DARK THEME TOKENS (Pantone Shadow / Hematite base) */
+  --bg-primary: hsl(240, 17%, 8%);            /* Deep Hematite */
+  --bg-secondary: hsl(240, 17%, 12%);          /* Hematite */
+  --bg-tertiary: hsl(218, 23%, 18%);           /* Baltic Sea */
+  --bg-surface: hsl(240, 17%, 9%);             /* Hematite surface */
   
-  --glass-bg: hsla(220, 20%, 11%, 0.7);
-  --glass-border: hsla(0, 0%, 100%, 0.08);
-  --glass-border-hover: hsla(0, 0%, 100%, 0.18);
-  --glass-glow: hsla(0, 0%, 100%, 0.02);
+  --glass-bg: hsla(218, 23%, 14%, 0.7);        /* Baltic Sea glass */
+  --glass-border: hsla(90, 10%, 98%, 0.08);    /* Cloud Dancer border */
+  --glass-border-hover: hsla(90, 10%, 98%, 0.18);
+  --glass-glow: hsla(270, 95%, 85%, 0.02);     /* Quiet Violet glow */
 
-  --text-primary: hsl(0, 0%, 96%);
-  --text-secondary: hsl(220, 14%, 74%);
-  --text-muted: hsl(220, 10%, 54%);
+  --text-primary: hsl(90, 10%, 98%);           /* Cloud Dancer */
+  --text-secondary: hsl(215, 20%, 78%);        /* Cloud Cover */
+  --text-muted: hsl(215, 10%, 56%);
 
-  --btn-secondary-hover: hsl(220, 16%, 22%);
-  --dialog-overlay: rgba(0, 0, 0, 0.85);
+  --btn-secondary-hover: hsl(218, 23%, 22%);
+  --dialog-overlay: rgba(13, 13, 18, 0.85);
 
-  /* Professional Premium Palette */
-  --color-calories: hsl(162, 72%, 46%);       /* Emerald Mint */
-  --color-protein: hsl(239, 84%, 67%);        /* Royal Indigo */
-  --color-carbs: hsl(38, 92%, 50%);           /* Amber Gold */
-  --color-fat: hsl(350, 89%, 60%);            /* Coral Pink */
-  --color-steps: hsl(172, 66%, 50%);          /* Ocean Teal */
-  --color-sleep: hsl(235, 85%, 74%);          /* Soft Lavender */
-  --color-workout: hsl(25, 95%, 53%);         /* Sunset Orange */
+  /* Pantone Accent Palette */
+  --color-calories: hsl(150, 65%, 55%);        /* Veiled Vista (Sage) */
+  --color-protein: hsl(270, 90%, 80%);         /* Quiet Violet (Lavender) */
+  --color-carbs: hsl(43, 95%, 55%);            /* Golden Mist (Gold) */
+  --color-fat: hsl(352, 85%, 68%);             /* Coral Mist */
+  --color-steps: hsl(180, 62%, 55%);           /* Blue Fusion (Teal) */
+  --color-sleep: hsl(258, 80%, 78%);           /* Slate Indigo */
+  --color-workout: hsl(25, 92%, 58%);          /* Sunset Ochre */
 }
 
 /* Explicit Dark Theme (identical to root defaults) */
 [data-theme="dark"] {
-  --bg-primary: hsl(220, 24%, 6%);
-  --bg-secondary: hsl(220, 20%, 11%);
-  --bg-tertiary: hsl(220, 16%, 16%);
-  --bg-surface: hsl(220, 22%, 8%);
+  --bg-primary: hsl(240, 17%, 8%);
+  --bg-secondary: hsl(240, 17%, 12%);
+  --bg-tertiary: hsl(218, 23%, 18%);
+  --bg-surface: hsl(240, 17%, 9%);
   
-  --glass-bg: hsla(220, 20%, 11%, 0.7);
-  --glass-border: hsla(0, 0%, 100%, 0.08);
-  --glass-border-hover: hsla(0, 0%, 100%, 0.18);
-  --glass-glow: hsla(0, 0%, 100%, 0.02);
+  --glass-bg: hsla(218, 23%, 14%, 0.7);
+  --glass-border: hsla(90, 10%, 98%, 0.08);
+  --glass-border-hover: hsla(90, 10%, 98%, 0.18);
+  --glass-glow: hsla(270, 95%, 85%, 0.02);
 
-  --text-primary: hsl(0, 0%, 96%);
-  --text-secondary: hsl(220, 14%, 74%);
-  --text-muted: hsl(220, 10%, 54%);
+  --text-primary: hsl(90, 10%, 98%);
+  --text-secondary: hsl(215, 20%, 78%);
+  --text-muted: hsl(215, 10%, 56%);
   
-  --btn-secondary-hover: hsl(220, 16%, 22%);
-  --dialog-overlay: rgba(0, 0, 0, 0.85);
+  --btn-secondary-hover: hsl(218, 23%, 22%);
+  --dialog-overlay: rgba(13, 13, 18, 0.85);
 
-  --color-calories: hsl(162, 72%, 46%);
-  --color-protein: hsl(239, 84%, 67%);
-  --color-carbs: hsl(38, 92%, 50%);
-  --color-fat: hsl(350, 89%, 60%);
-  --color-steps: hsl(172, 66%, 50%);
-  --color-sleep: hsl(235, 85%, 74%);
-  --color-workout: hsl(25, 95%, 53%);
+  --color-calories: hsl(150, 65%, 55%);
+  --color-protein: hsl(270, 90%, 80%);
+  --color-carbs: hsl(43, 95%, 55%);
+  --color-fat: hsl(352, 85%, 68%);
+  --color-steps: hsl(180, 62%, 55%);
+  --color-sleep: hsl(258, 80%, 78%);
+  --color-workout: hsl(25, 92%, 58%);
   
   --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
 }
 
-/* Explicit Light Theme (high-end elegant card system) */
+/* Explicit Light Theme (Pantone Light / Cloud Dancer & Cover base) */
 [data-theme="light"] {
-  --bg-primary: hsl(220, 15%, 93%);
-  --bg-secondary: hsl(220, 15%, 95%);
-  --bg-tertiary: hsl(220, 12%, 89%);
-  --bg-surface: hsl(220, 15%, 96%); /* Container background: very soft cool gray */
+  --bg-primary: hsl(90, 10%, 94%);             /* Cloud Dancer primary */
+  --bg-secondary: hsl(90, 8%, 89%);            /* Cloud Dancer secondary */
+  --bg-tertiary: hsl(215, 20%, 85%);           /* Cloud Cover tertiary */
+  --bg-surface: hsl(90, 10%, 98%);             /* Cloud Dancer container background */
   
-  --glass-bg: hsl(0, 0%, 100%);     /* Cards are crisp pure white */
-  --glass-border: hsla(220, 15%, 10%, 0.06);
-  --glass-border-hover: hsla(220, 15%, 10%, 0.14);
-  --glass-glow: hsla(0, 0%, 100%, 0.8);
+  --glass-bg: hsl(0, 0%, 100%);               /* Cards: Pure crisp white */
+  --glass-border: hsla(240, 17%, 11%, 0.06);   /* Hematite fine borders */
+  --glass-border-hover: hsla(240, 17%, 11%, 0.14);
+  --glass-glow: hsla(90, 10%, 98%, 0.6);
 
-  --text-primary: hsl(220, 35%, 15%);
-  --text-secondary: hsl(220, 20%, 35%);
-  --text-muted: hsl(220, 12%, 52%);
+  --text-primary: hsl(240, 20%, 12%);          /* Hematite text */
+  --text-secondary: hsl(218, 23%, 32%);        /* Baltic Sea text */
+  --text-muted: hsl(218, 12%, 52%);
 
-  --btn-secondary-hover: hsl(220, 12%, 84%);
+  --btn-secondary-hover: hsl(215, 20%, 80%);
   --dialog-overlay: rgba(200, 205, 215, 0.6);
 
-  /* Fresh, highly readable accents for Light Mode */
-  --color-calories: hsl(160, 84%, 30%);      /* Deep Emerald */
-  --color-protein: hsl(240, 75%, 55%);       /* Royal Blue */
-  --color-carbs: hsl(35, 95%, 43%);          /* Amber Gold */
-  --color-fat: hsl(340, 80%, 50%);           /* Rose Red */
-  --color-steps: hsl(175, 75%, 35%);         /* Ocean Teal */
-  --color-sleep: hsl(230, 70%, 50%);         /* Lavender Blue */
-  --color-workout: hsl(20, 85%, 45%);        /* Sunset Orange */
+  /* Polished high-contrast Pantone accents for Light Mode */
+  --color-calories: hsl(150, 75%, 28%);        /* Deep Veiled Vista (Sage) */
+  --color-protein: hsl(262, 75%, 52%);         /* Quiet Violet (Lavender) */
+  --color-carbs: hsl(38, 90%, 42%);            /* Deep Golden Mist (Gold) */
+  --color-fat: hsl(348, 80%, 48%);
+  --color-steps: hsl(175, 75%, 34%);           /* Ocean Fusion */
+  --color-sleep: hsl(255, 65%, 50%);           /* Slate Indigo */
+  --color-workout: hsl(20, 85%, 45%);          /* Sunset Ochre */
   
-  --shadow-premium: 0 10px 30px -8px rgba(15, 23, 42, 0.05), 0 4px 12px -4px rgba(15, 23, 42, 0.02);
+  --shadow-premium: 0 10px 30px -8px rgba(39, 47, 63, 0.06), 0 4px 12px -4px rgba(39, 47, 63, 0.03);
 }
 
 /* Global Reset & Base Styles */
