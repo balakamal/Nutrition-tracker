@@ -34,12 +34,12 @@ jobs:
       - name: Capacitor Android Sync
         run: npx cap sync android
 
-      # Step 6: Setup Java 17 for Android Gradle compilation
-      - name: Set up JDK 17
+      # Step 6: Setup Java 21 for Android Gradle compilation
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
           cache: 'gradle'
 
       # Step 7: Grant Execute Permission to Gradle Wrapper
