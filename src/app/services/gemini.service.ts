@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Preferences } from '@capacitor/preferences';
 
 export interface FoodAnalysisResult {
   mealName: string;
@@ -18,31 +19,35 @@ export class GeminiService {
   constructor() {}
 
   /**
-   * Saves the Gemini API key to local storage
+   * Saves the Gemini API key to Capacitor Preferences and local storage
    */
-  saveApiKey(key: string): void {
+  async saveApiKey(key: string): Promise<void> {
+    await Preferences.set({ key: 'gemini_api_key', value: key.trim() });
     localStorage.setItem('gemini_api_key', key.trim());
   }
 
   /**
-   * Retrieves the Gemini API key from local storage
+   * Retrieves the Gemini API key from Capacitor Preferences or local storage fallback
    */
-  getApiKey(): string | null {
+  async getApiKey(): Promise<string | null> {
+    const { value } = await Preferences.get({ key: 'gemini_api_key' });
+    if (value) return value;
     return localStorage.getItem('gemini_api_key');
   }
 
   /**
-   * Clears the Gemini API key from local storage
+   * Clears the Gemini API key from Preferences and local storage
    */
-  clearApiKey(): void {
+  async clearApiKey(): Promise<void> {
+    await Preferences.remove({ key: 'gemini_api_key' });
     localStorage.removeItem('gemini_api_key');
   }
 
   /**
-   * Checks if an API key exists in local storage
+   * Checks if an API key exists in Preferences or local storage
    */
-  hasApiKey(): boolean {
-    const key = this.getApiKey();
+  async hasApiKey(): Promise<boolean> {
+    const key = await this.getApiKey();
     return !!key && key.length > 10;
   }
 
@@ -83,7 +88,7 @@ export class GeminiService {
    * @param mimeType The mime type of the image, e.g. "image/jpeg"
    */
   async analyzeFoodImage(base64Image: string, mimeType: string): Promise<FoodAnalysisResult> {
-    const apiKey = this.getApiKey();
+    const apiKey = await this.getApiKey();
     if (!apiKey) {
       throw new Error('Gemini API key is not configured.');
     }
@@ -164,7 +169,7 @@ The JSON format MUST be exactly:
    * Analyzes food text entry using Gemini and returns parsed nutritional estimates.
    */
   async analyzeFoodText(textPrompt: string): Promise<FoodAnalysisResult> {
-    const apiKey = this.getApiKey();
+    const apiKey = await this.getApiKey();
     if (!apiKey) {
       throw new Error('Gemini API key is not configured.');
     }

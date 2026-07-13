@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HealthConnectService } from './services/health-connect.service';
 import { GeminiService, FoodAnalysisResult } from './services/gemini.service';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-root',
@@ -56,6 +58,9 @@ export class AppComponent implements OnInit {
   healthConnectStatus: 'Available' | 'NotInstalled' | 'NotSupported' | 'Checking' = 'Checking';
   healthConnectReason = '';
   healthConnectIsMocked = false;
+  healthTimeFilter: 'today' | 'yesterday' | 'week' = 'today';
+  remindersEnabled = true;
+  pendingChatResult: FoodAnalysisResult | null = null;
   dailySteps = 0;
   sleepSessions: any[] = [];
   workouts: any[] = [];
@@ -101,12 +106,14 @@ export class AppComponent implements OnInit {
     private geminiService: GeminiService
   ) {}
 
-  ngOnInit(): void {
-    this.checkApiKeyConfig();
-    this.loadFoodLogs();
-    this.loadUserProfile();
-    this.initHealthConnect();
+  async ngOnInit(): Promise<void> {
+    await this.migrateStorageIfNeeded();
+    await this.checkApiKeyConfig();
+    await this.loadFoodLogs();
+    await this.loadUserProfile();
+    await this.initHealthConnect();
     this.initTheme();
+    await this.initReminders();
   }
 
   // Theme Management
@@ -139,49 +146,88 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Native Preferences Storage Migration Fallback
+  async migrateStorageIfNeeded(): Promise<void> {
+    const migrated = localStorage.getItem('prefs_migrated') === 'true';
+    if (migrated) return;
+
+    const keys = [
+      'gemini_api_key',
+      'theme',
+      'user_profile',
+      'food_logs',
+      'health_mode',
+      'manual_steps',
+      'manual_sleep',
+      'reminders_enabled',
+      'health_time_filter'
+    ];
+
+    for (const key of keys) {
+      const val = localStorage.getItem(key);
+      if (val !== null) {
+        await Preferences.set({ key, value: val });
+      }
+    }
+    
+    localStorage.setItem('prefs_migrated', 'true');
+    console.log('WebView localStorage migrated to native Preferences storage successfully.');
+  }
+
   // API Key checks
-  checkApiKeyConfig(): void {
-    this.hasApiKey = this.geminiService.hasApiKey();
+  async checkApiKeyConfig(): Promise<void> {
+    this.hasApiKey = await this.geminiService.hasApiKey();
     if (this.hasApiKey) {
-      const key = this.geminiService.getApiKey();
+      const key = await this.geminiService.getApiKey();
       this.apiKeyInput = key ? `••••••••••••••••${key.slice(-4)}` : '';
     } else {
       this.apiKeyInput = '';
     }
   }
 
-  saveApiKey(): void {
+  async saveApiKey(): Promise<void> {
     if (this.apiKeyInput.trim().length > 10) {
-      this.geminiService.saveApiKey(this.apiKeyInput);
+      await this.geminiService.saveApiKey(this.apiKeyInput);
       this.hasApiKey = true;
       this.showSettings = false;
       this.analysisError = null;
     }
   }
 
-  saveSettingsConfig(): void {
+  async saveSettingsConfig(): Promise<void> {
     // Save API key if modified
     if (this.apiKeyInput.trim() && !this.apiKeyInput.includes('••••')) {
-      this.geminiService.saveApiKey(this.apiKeyInput);
+      await this.geminiService.saveApiKey(this.apiKeyInput);
       this.hasApiKey = true;
     }
     // Save profile and sync mode
-    this.saveUserProfile();
+    await this.saveUserProfile();
     this.showSettings = false;
     this.analysisError = null;
   }
 
-  resetApiKey(): void {
-    this.geminiService.clearApiKey();
+  async resetApiKey(): Promise<void> {
+    await this.geminiService.clearApiKey();
     this.hasApiKey = false;
     this.apiKeyInput = '';
     
-    // Clear profile and logs as well
+    // Clear profile and logs in native preferences
+    await Preferences.remove({ key: 'user_profile' });
+    await Preferences.remove({ key: 'food_logs' });
+    await Preferences.remove({ key: 'health_mode' });
+    await Preferences.remove({ key: 'manual_steps' });
+    await Preferences.remove({ key: 'manual_sleep' });
+    await Preferences.remove({ key: 'reminders_enabled' });
+    await Preferences.remove({ key: 'health_time_filter' });
+
+    // Clear fallbacks
     localStorage.removeItem('user_profile');
     localStorage.removeItem('food_logs');
     localStorage.removeItem('health_mode');
     localStorage.removeItem('manual_steps');
     localStorage.removeItem('manual_sleep');
+    localStorage.removeItem('reminders_enabled');
+    localStorage.removeItem('health_time_filter');
     
     this.profileName = 'User';
     this.profileAge = 28;
@@ -201,11 +247,12 @@ export class AppComponent implements OnInit {
   }
 
   // User Profile configuration
-  loadUserProfile(): void {
-    const savedProfile = localStorage.getItem('user_profile');
-    if (savedProfile) {
+  async loadUserProfile(): Promise<void> {
+    const { value: savedProfile } = await Preferences.get({ key: 'user_profile' });
+    const profileVal = savedProfile || localStorage.getItem('user_profile');
+    if (profileVal) {
       try {
-        const profile = JSON.parse(savedProfile);
+        const profile = JSON.parse(profileVal);
         this.profileName = profile.name || 'User';
         this.profileAge = Number(profile.age) || 28;
         this.profileGender = profile.gender || 'Male';
@@ -217,14 +264,25 @@ export class AppComponent implements OnInit {
         console.error('Failed to parse user profile', e);
       }
     }
-    this.healthMode = (localStorage.getItem('health_mode') as 'sync' | 'manual') || 'sync';
-    this.manualSteps = Number(localStorage.getItem('manual_steps')) || 8000;
-    this.manualSleep = Number(localStorage.getItem('manual_sleep')) || 480;
+    const { value: modeVal } = await Preferences.get({ key: 'health_mode' });
+    this.healthMode = (modeVal as 'sync' | 'manual') || localStorage.getItem('health_mode') as 'sync' | 'manual' || 'sync';
+    
+    const { value: stepsVal } = await Preferences.get({ key: 'manual_steps' });
+    this.manualSteps = Number(stepsVal) || Number(localStorage.getItem('manual_steps')) || 8000;
+
+    const { value: sleepVal } = await Preferences.get({ key: 'manual_sleep' });
+    this.manualSleep = Number(sleepVal) || Number(localStorage.getItem('manual_sleep')) || 480;
+
+    const { value: remindersVal } = await Preferences.get({ key: 'reminders_enabled' });
+    this.remindersEnabled = remindersVal !== 'false' && localStorage.getItem('reminders_enabled') !== 'false';
+
+    const { value: filterVal } = await Preferences.get({ key: 'health_time_filter' });
+    this.healthTimeFilter = (filterVal as 'today' | 'yesterday' | 'week') || localStorage.getItem('health_time_filter') as 'today' | 'yesterday' | 'week' || 'today';
 
     this.recalculateGoals();
   }
 
-  saveUserProfile(): void {
+  async saveUserProfile(): Promise<void> {
     const profile = {
       name: this.profileName,
       age: this.profileAge,
@@ -234,13 +292,31 @@ export class AppComponent implements OnInit {
       activity: this.profileActivity,
       goal: this.profileGoal
     };
-    localStorage.setItem('user_profile', JSON.stringify(profile));
+    const profileJson = JSON.stringify(profile);
+    await Preferences.set({ key: 'user_profile', value: profileJson });
+    await Preferences.set({ key: 'health_mode', value: this.healthMode });
+    await Preferences.set({ key: 'manual_steps', value: String(this.manualSteps) });
+    await Preferences.set({ key: 'manual_sleep', value: String(this.manualSleep) });
+    await Preferences.set({ key: 'reminders_enabled', value: String(this.remindersEnabled) });
+    await Preferences.set({ key: 'health_time_filter', value: this.healthTimeFilter });
+
+    // Fallbacks
+    localStorage.setItem('user_profile', profileJson);
     localStorage.setItem('health_mode', this.healthMode);
     localStorage.setItem('manual_steps', String(this.manualSteps));
     localStorage.setItem('manual_sleep', String(this.manualSleep));
+    localStorage.setItem('reminders_enabled', String(this.remindersEnabled));
+    localStorage.setItem('health_time_filter', this.healthTimeFilter);
 
     this.recalculateGoals();
-    this.syncHealthData();
+    await this.syncHealthData();
+    
+    // Apply reminder settings updates
+    if (this.remindersEnabled) {
+      await this.scheduleReminders();
+    } else {
+      await this.cancelReminders();
+    }
   }
 
   recalculateGoals(): void {
@@ -301,6 +377,28 @@ export class AppComponent implements OnInit {
     }
   }
 
+  getHealthFilterBounds(): { startTime: string; endTime: string } {
+    const end = new Date();
+    const start = new Date();
+    
+    if (this.healthTimeFilter === 'today') {
+      start.setHours(0, 0, 0, 0);
+    } else if (this.healthTimeFilter === 'yesterday') {
+      start.setDate(start.getDate() - 1);
+      start.setHours(0, 0, 0, 0);
+      
+      end.setDate(end.getDate() - 1);
+      end.setHours(23, 59, 59, 999);
+    } else if (this.healthTimeFilter === 'week') {
+      start.setDate(start.getDate() - 7);
+    }
+    
+    return {
+      startTime: start.toISOString(),
+      endTime: end.toISOString()
+    };
+  }
+
   async syncHealthData(): Promise<void> {
     if (this.healthMode === 'manual') {
       this.dailySteps = this.manualSteps;
@@ -329,9 +427,10 @@ export class AppComponent implements OnInit {
     if (this.isSyncing) return;
     this.isSyncing = true;
     try {
-      this.dailySteps = await this.healthService.getDailySteps();
-      this.sleepSessions = await this.healthService.getSleepSessions();
-      this.workouts = await this.healthService.getWorkouts();
+      const bounds = this.getHealthFilterBounds();
+      this.dailySteps = await this.healthService.getDailySteps(bounds.startTime, bounds.endTime);
+      this.sleepSessions = await this.healthService.getSleepSessions(bounds.startTime, bounds.endTime);
+      this.workouts = await this.healthService.getWorkouts(bounds.startTime, bounds.endTime);
     } catch (e) {
       console.error('Failed to sync Health Connect data', e);
     } finally {
@@ -339,12 +438,13 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Dynamic Data & LocalStorage Persistence
-  loadFoodLogs(): void {
-    const savedLogs = localStorage.getItem('food_logs');
-    if (savedLogs) {
+  // Dynamic Data & Preferences Persistence
+  async loadFoodLogs(): Promise<void> {
+    const { value: savedLogs } = await Preferences.get({ key: 'food_logs' });
+    const logsVal = savedLogs || localStorage.getItem('food_logs');
+    if (logsVal) {
       try {
-        this.foodLogs = JSON.parse(savedLogs);
+        this.foodLogs = JSON.parse(logsVal);
       } catch (e) {
         console.error('Failed to parse saved food logs, using defaults', e);
       }
@@ -368,7 +468,9 @@ export class AppComponent implements OnInit {
           description: 'Grilled chicken breast on mixed greens with olive oil dressing.'
         }
       ];
-      localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+      const logsJson = JSON.stringify(this.foodLogs);
+      await Preferences.set({ key: 'food_logs', value: logsJson });
+      localStorage.setItem('food_logs', logsJson);
     }
     this.calculateTotals();
   }
@@ -387,18 +489,22 @@ export class AppComponent implements OnInit {
     });
   }
 
-  clearFoodLogs(): void {
+  async clearFoodLogs(): Promise<void> {
     if (confirm('Are you sure you want to clear all logs?')) {
       this.foodLogs = [];
-      localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+      const logsJson = JSON.stringify(this.foodLogs);
+      await Preferences.set({ key: 'food_logs', value: logsJson });
+      localStorage.setItem('food_logs', logsJson);
       this.calculateTotals();
     }
   }
 
-  deleteFoodLog(index: number): void {
+  async deleteFoodLog(index: number): Promise<void> {
     if (confirm('Are you sure you want to delete this log entry?')) {
       this.foodLogs.splice(index, 1);
-      localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+      const logsJson = JSON.stringify(this.foodLogs);
+      await Preferences.set({ key: 'food_logs', value: logsJson });
+      localStorage.setItem('food_logs', logsJson);
       this.calculateTotals();
     }
   }
@@ -410,9 +516,11 @@ export class AppComponent implements OnInit {
     this.uploadedFileName = demo.name;
 
     try {
-      if (this.geminiService.hasApiKey() && !this.geminiService.getApiKey()?.startsWith('AIzaSyMock')) {
+      const hasKey = await this.geminiService.hasApiKey();
+      const apiKey = await this.geminiService.getApiKey();
+      if (hasKey && !apiKey?.startsWith('AIzaSyMock')) {
         const result = await this.geminiService.analyzeFoodImage(demo.base64, demo.mimeType);
-        this.addFoodLog(result);
+        await this.addFoodLog(result);
       } else {
         await new Promise(resolve => setTimeout(resolve, 1500));
         const result: FoodAnalysisResult = {
@@ -446,7 +554,7 @@ export class AppComponent implements OnInit {
       const base64Data = e.target.result;
       try {
         const result = await this.geminiService.analyzeFoodImage(base64Data, file.type);
-        this.addFoodLog(result);
+        await this.addFoodLog(result);
       } catch (err: any) {
         this.analysisError = err?.message || 'Gemini Vision analysis failed. Please verify your API Key and image.';
       } finally {
@@ -460,10 +568,12 @@ export class AppComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  addFoodLog(result: FoodAnalysisResult): void {
+  async addFoodLog(result: FoodAnalysisResult): Promise<void> {
     this.latestAnalysis = result;
     this.foodLogs.unshift(result);
-    localStorage.setItem('food_logs', JSON.stringify(this.foodLogs));
+    const logsJson = JSON.stringify(this.foodLogs);
+    await Preferences.set({ key: 'food_logs', value: logsJson });
+    localStorage.setItem('food_logs', logsJson);
     this.calculateTotals();
   }
 
@@ -499,15 +609,117 @@ export class AppComponent implements OnInit {
     if (!this.chatInputText.trim()) return;
     this.isChatLogging = true;
     this.chatError = null;
+    this.pendingChatResult = null;
     try {
       const result = await this.geminiService.analyzeFoodText(this.chatInputText);
-      this.addFoodLog(result);
+      this.pendingChatResult = result;
       this.chatInputText = '';
     } catch (e: any) {
       console.error('Failed to log food via chat:', e);
       this.chatError = e.message || 'Failed to parse text entry. Please try again.';
     } finally {
       this.isChatLogging = false;
+    }
+  }
+
+  confirmAndLogPendingChat(): void {
+    if (this.pendingChatResult) {
+      this.addFoodLog(this.pendingChatResult);
+      this.pendingChatResult = null;
+    }
+  }
+
+  clearPendingChatResult(): void {
+    this.pendingChatResult = null;
+  }
+
+  // Local Notification Reminders
+  async initReminders(): Promise<void> {
+    this.remindersEnabled = localStorage.getItem('reminders_enabled') !== 'false';
+    if (this.remindersEnabled) {
+      await this.scheduleReminders();
+    }
+  }
+
+  async requestNotificationPermission(): Promise<boolean> {
+    try {
+      const permission = await LocalNotifications.checkPermissions();
+      if (permission.display !== 'granted') {
+        const result = await LocalNotifications.requestPermissions();
+        return result.display === 'granted';
+      }
+      return true;
+    } catch (e) {
+      console.error('Failed to request notification permission:', e);
+      return false;
+    }
+  }
+
+  async scheduleReminders(): Promise<void> {
+    try {
+      // Clear existing first to avoid duplicate notifications
+      await this.cancelReminders();
+
+      const hasPerm = await this.requestNotificationPermission();
+      if (!hasPerm) {
+        console.warn('Notifications permission denied, skipping schedule.');
+        return;
+      }
+
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: 101,
+            title: "🍳 Breakfast Time!",
+            body: "Time to log your breakfast. Keep up with your target calorie and macros goal!",
+            schedule: { every: 'day', on: { hour: 8, minute: 30 } }
+          },
+          {
+            id: 102,
+            title: "🥗 Lunch Reminder",
+            body: "Don't forget to track your lunch. Let AI analyze your food plate image or describe your meal!",
+            schedule: { every: 'day', on: { hour: 13, minute: 0 } }
+          },
+          {
+            id: 103,
+            title: "💧 Water & Hydration",
+            body: "Have you had a glass of water recently? Keep hydrated for optimal metabolism!",
+            schedule: { every: 'day', on: { hour: 15, minute: 30 } }
+          },
+          {
+            id: 104,
+            title: "🍽 Dinner Time!",
+            body: "Time for dinner logging. How close are you to meeting your daily protein, carbs and fats target?",
+            schedule: { every: 'day', on: { hour: 19, minute: 30 } }
+          },
+          {
+            id: 105,
+            title: "💧 Evening Hydration",
+            body: "One last check on your water intake for today. Have a restful night!",
+            schedule: { every: 'day', on: { hour: 21, minute: 30 } }
+          }
+        ]
+      });
+      console.log('Daily reminders scheduled.');
+    } catch (e) {
+      console.error('Failed to schedule reminders:', e);
+    }
+  }
+
+  async cancelReminders(): Promise<void> {
+    try {
+      await LocalNotifications.cancel({
+        notifications: [
+          { id: 101 },
+          { id: 102 },
+          { id: 103 },
+          { id: 104 },
+          { id: 105 }
+        ]
+      });
+      console.log('Reminders cancelled.');
+    } catch (e) {
+      console.error('Failed to cancel reminders:', e);
     }
   }
 }

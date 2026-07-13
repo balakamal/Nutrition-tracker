@@ -84,22 +84,28 @@ export class HealthConnectService {
   }
 
   /**
-   * Pulls deduplicated steps for the current day.
+   * Pulls deduplicated steps for a specified timeframe.
    */
-  async getDailySteps(): Promise<number> {
+  async getDailySteps(startTime?: string, endTime?: string): Promise<number> {
     if (!this.isAndroid) {
       return 0;
     }
 
     try {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
+      let start = startTime;
+      let end = endTime;
+      
+      if (!start || !end) {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        start = todayStart.toISOString();
+        end = new Date().toISOString();
+      }
 
       const response = await HealthConnect.readRecords({
         type: 'steps',
-        startTime: todayStart.toISOString(),
-        endTime: todayEnd.toISOString()
+        startTime: start,
+        endTime: end
       });
 
       if (response && response.records) {
@@ -113,22 +119,28 @@ export class HealthConnectService {
   }
 
   /**
-   * Fetches sleep sessions for the last 7 days.
+   * Fetches sleep sessions for a specified timeframe.
    */
-  async getSleepSessions(): Promise<any[]> {
+  async getSleepSessions(startTime?: string, endTime?: string): Promise<any[]> {
     if (!this.isAndroid) {
       return [];
     }
 
     try {
-      const startTime = new Date();
-      startTime.setDate(startTime.getDate() - 7);
-      const endTime = new Date();
+      let start = startTime;
+      let end = endTime;
+
+      if (!start || !end) {
+        const defaultStart = new Date();
+        defaultStart.setDate(defaultStart.getDate() - 7);
+        start = defaultStart.toISOString();
+        end = new Date().toISOString();
+      }
 
       const response = await HealthConnect.readRecords({
         type: 'sleep',
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString()
+        startTime: start,
+        endTime: end
       });
 
       return response.records || [];
@@ -139,22 +151,28 @@ export class HealthConnectService {
   }
 
   /**
-   * Fetches workout (exercise) sessions for the last 7 days.
+   * Fetches workout (exercise) sessions for a specified timeframe.
    */
-  async getWorkouts(): Promise<any[]> {
+  async getWorkouts(startTime?: string, endTime?: string): Promise<any[]> {
     if (!this.isAndroid) {
       return [];
     }
 
     try {
-      const startTime = new Date();
-      startTime.setDate(startTime.getDate() - 7);
-      const endTime = new Date();
+      let start = startTime;
+      let end = endTime;
+
+      if (!start || !end) {
+        const defaultStart = new Date();
+        defaultStart.setDate(defaultStart.getDate() - 7);
+        start = defaultStart.toISOString();
+        end = new Date().toISOString();
+      }
 
       const response = await HealthConnect.readRecords({
         type: 'exercise',
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString()
+        startTime: start,
+        endTime: end
       });
 
       return response.records || [];

@@ -99,6 +99,23 @@
         </div>
       </div>
 
+      <!-- Reminder Notification Toggle -->
+      <div style="text-align: left; margin-bottom: 20px; border-top: 1px solid var(--glass-border); padding-top: 16px;">
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--color-steps); text-transform: uppercase; letter-spacing: 0.05em;">Notifications</h3>
+        <div style="display: flex; align-items: center; justify-content: space-between; background-color: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700;">Reminders</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Daily alerts for water intake and food logging</div>
+          </div>
+          <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+            <input type="checkbox" [(ngModel)]="remindersEnabled" style="opacity: 0; width: 0; height: 0;">
+            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); transition: .3s; border-radius: 24px; display: flex; align-items: center;" [style.background-color]="remindersEnabled ? 'var(--color-primary)' : 'var(--bg-tertiary)'">
+              <span style="height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; display: inline-block;" [style.transform]="remindersEnabled ? 'translateX(20px)' : 'translateX(0px)'"></span>
+            </span>
+          </label>
+        </div>
+      </div>
+
       <!-- Health Sync Mode Options -->
       <div style="text-align: left; margin-bottom: 24px; border-top: 1px solid var(--glass-border); padding-top: 16px;">
         <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--color-carbs); text-transform: uppercase; letter-spacing: 0.05em;">Health Connect Mode</h3>
@@ -187,6 +204,23 @@
             <option value="Maintain Weight">Maintain Weight (TDEE)</option>
             <option value="Gain Weight">Gain Weight (+500 kcal)</option>
           </select>
+        </div>
+
+        <!-- Reminder Notification Toggle (Onboarding) -->
+        <div style="text-align: left; margin-bottom: 14px; border-top: 1px solid var(--glass-border); padding-top: 16px;">
+          <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Notifications Settings</label>
+          <div style="display: flex; align-items: center; justify-content: space-between; background-color: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700;">Reminders</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Daily alerts for water intake and food logging</div>
+            </div>
+            <label class="switch" style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+              <input type="checkbox" [(ngModel)]="remindersEnabled" style="opacity: 0; width: 0; height: 0;">
+              <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-tertiary); border: 1px solid var(--glass-border); transition: .3s; border-radius: 24px; display: flex; align-items: center;" [style.background-color]="remindersEnabled ? 'var(--color-primary)' : 'var(--bg-tertiary)'">
+                <span style="height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; display: inline-block;" [style.transform]="remindersEnabled ? 'translateX(20px)' : 'translateX(0px)'"></span>
+              </span>
+            </label>
+          </div>
         </div>
 
         <!-- Health Sync Mode Options -->
@@ -412,6 +446,31 @@
           </span>
         </button>
       </div>
+
+      <!-- Pending Chat Result / Confirmation Pill -->
+      <div *ngIf="pendingChatResult" class="glass-card animate-fade-up" style="background-color: hsla(207, 45%, 35%, 0.1); border-color: rgba(30, 136, 229, 0.3); margin-top: 16px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <h3 class="text-protein" style="font-size: 1rem; font-weight: 800; margin: 0;">AI Generated entry: {{ pendingChatResult.mealName }}</h3>
+          <button (click)="clearPendingChatResult()" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">✕</button>
+        </div>
+        <p style="font-size: 0.85rem; line-height: 1.4; margin: 0 0 12px; color: var(--text-secondary);">{{ pendingChatResult.description }}</p>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; background-color: rgba(0,0,0,0.15); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px;">
+          <div style="display: flex; gap: 14px; font-size: 0.8rem; font-weight: 700;">
+            <div>Kcal: <span class="text-calories">{{ pendingChatResult.calories }}</span></div>
+            <div>P: <span class="text-protein">{{ pendingChatResult.protein }}g</span></div>
+            <div>C: <span class="text-carbs">{{ pendingChatResult.carbs }}g</span></div>
+            <div>F: <span class="text-fat">{{ pendingChatResult.fat }}g</span></div>
+          </div>
+        </div>
+        
+        <button class="btn-primary" (click)="confirmAndLogPendingChat()" style="background: linear-gradient(135deg, var(--color-calories) 0%, hsl(352, 65%, 45%) 100%); color: white; padding: 10px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; width: 100%; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 75, 75, 0.25);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Log this Meal
+        </button>
+      </div>
     </div>
 
     <!-- Health Connect Integration Card -->
@@ -448,6 +507,13 @@
       <!-- Verbose status description/reason -->
       <div *ngIf="healthConnectReason" style="font-size: 0.8rem; margin-top: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background-color: rgba(255,255,255,0.03); color: var(--text-secondary); border: 1px solid var(--glass-border); line-height: 1.45;">
         {{ healthConnectReason }}
+      </div>
+
+      <!-- Time range filters for Health Connect -->
+      <div *ngIf="healthConnectStatus === 'Available' || healthMode === 'manual'" style="display: flex; gap: 6px; margin-top: 4px; margin-bottom: 16px; background-color: rgba(0,0,0,0.15); padding: 4px; border-radius: 16px; border: 1px solid var(--glass-border);">
+        <button (click)="healthTimeFilter = 'today'; syncHealthData()" [style.background-color]="healthTimeFilter === 'today' ? 'var(--color-primary)' : 'transparent'" [style.color]="healthTimeFilter === 'today' ? 'white' : 'var(--text-muted)'" [style.font-weight]="healthTimeFilter === 'today' ? '700' : '400'" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s ease;">Today</button>
+        <button (click)="healthTimeFilter = 'yesterday'; syncHealthData()" [style.background-color]="healthTimeFilter === 'yesterday' ? 'var(--color-primary)' : 'transparent'" [style.color]="healthTimeFilter === 'yesterday' ? 'white' : 'var(--text-muted)'" [style.font-weight]="healthTimeFilter === 'yesterday' ? '700' : '400'" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s ease;">Yesterday</button>
+        <button (click)="healthTimeFilter = 'week'; syncHealthData()" [style.background-color]="healthTimeFilter === 'week' ? 'var(--color-primary)' : 'transparent'" [style.color]="healthTimeFilter === 'week' ? 'white' : 'var(--text-muted)'" [style.font-weight]="healthTimeFilter === 'week' ? '700' : '400'" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s ease;">7 Days</button>
       </div>
 
       <!-- Manual Input Override Form -->
