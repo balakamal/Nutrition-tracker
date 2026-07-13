@@ -24,6 +24,7 @@
     "@capacitor/core": "^8.4.1",
     "@capacitor/local-notifications": "^8.2.0",
     "@capacitor/preferences": "^8.0.1",
+    "firebase": "^12.16.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"

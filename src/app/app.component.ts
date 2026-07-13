@@ -5,6 +5,7 @@ import { HealthConnectService } from './services/health-connect.service';
 import { GeminiService, FoodAnalysisResult } from './services/gemini.service';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Preferences } from '@capacitor/preferences';
+import { FirebaseService, FirebaseConfig } from './services/firebase.service';
 
 @Component({
   selector: 'app-root',
@@ -66,6 +67,15 @@ export class AppComponent implements OnInit {
   workouts: any[] = [];
   isSyncing = false;
 
+  // Firebase Integration State
+  isLoggedIn = false;
+  firebaseEmail = '';
+  firebasePassword = '';
+  isLoginMode = true;
+  firebaseError: string | null = null;
+  isFirebaseBusy = false;
+  firebaseConfigJson = '';
+
   // Vision Logging State
   isAnalyzing = false;
   analysisError: string | null = null;
@@ -103,12 +113,30 @@ export class AppComponent implements OnInit {
 
   constructor(
     private healthService: HealthConnectService,
-    private geminiService: GeminiService
+    private geminiService: GeminiService,
+    public firebaseService: FirebaseService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.migrateStorageIfNeeded();
     await this.checkApiKeyConfig();
+    
+    // Load saved Firebase config json
+    const savedConfig = await this.firebaseService.loadFirebaseConfig();
+    this.firebaseConfigJson = savedConfig ? JSON.stringify(savedConfig, null, 2) : '';
+
+    if (this.firebaseService.currentUserEmail) {
+      this.isLoggedIn = true;
+      await this.loadUserDataFromFirebase();
+    } else {
+      // Check mock session
+      const { value: mockUser } = await Preferences.get({ key: 'mock_current_user' });
+      if (mockUser) {
+        this.isLoggedIn = true;
+        await this.loadUserDataFromFirebase();
+      }
+    }
+
     await this.loadFoodLogs();
     await this.loadUserProfile();
     await this.initHealthConnect();
@@ -199,6 +227,17 @@ export class AppComponent implements OnInit {
     if (this.apiKeyInput.trim() && !this.apiKeyInput.includes('••••')) {
       await this.geminiService.saveApiKey(this.apiKeyInput);
       this.hasApiKey = true;
+    }
+    // Save Firebase configuration JSON if modified
+    if (this.firebaseConfigJson.trim()) {
+      try {
+        const parsed = JSON.parse(this.firebaseConfigJson);
+        if (parsed.apiKey && parsed.projectId) {
+          await this.firebaseService.saveFirebaseConfig(parsed);
+        }
+      } catch (e) {
+        console.error('Invalid Firebase Config JSON format.');
+      }
     }
     // Save profile and sync mode
     await this.saveUserProfile();
@@ -311,6 +350,11 @@ export class AppComponent implements OnInit {
     this.recalculateGoals();
     await this.syncHealthData();
     
+    // Save to Firebase if authenticated
+    if (this.isLoggedIn) {
+      await this.saveUserDataToFirebase();
+    }
+
     // Apply reminder settings updates
     if (this.remindersEnabled) {
       await this.scheduleReminders();
@@ -488,7 +532,6 @@ export class AppComponent implements OnInit {
       this.consumedFat += log.fat || 0;
     });
   }
-
   async clearFoodLogs(): Promise<void> {
     if (confirm('Are you sure you want to clear all logs?')) {
       this.foodLogs = [];
@@ -496,6 +539,9 @@ export class AppComponent implements OnInit {
       await Preferences.set({ key: 'food_logs', value: logsJson });
       localStorage.setItem('food_logs', logsJson);
       this.calculateTotals();
+      if (this.isLoggedIn) {
+        await this.saveUserDataToFirebase();
+      }
     }
   }
 
@@ -506,6 +552,9 @@ export class AppComponent implements OnInit {
       await Preferences.set({ key: 'food_logs', value: logsJson });
       localStorage.setItem('food_logs', logsJson);
       this.calculateTotals();
+      if (this.isLoggedIn) {
+        await this.saveUserDataToFirebase();
+      }
     }
   }
 
@@ -531,7 +580,7 @@ export class AppComponent implements OnInit {
           fat: demo.fat,
           description: demo.description
         };
-        this.addFoodLog(result);
+        await this.addFoodLog(result);
       }
     } catch (err: any) {
       this.analysisError = err?.message || 'Failed to analyze food image.';
@@ -575,6 +624,9 @@ export class AppComponent implements OnInit {
     await Preferences.set({ key: 'food_logs', value: logsJson });
     localStorage.setItem('food_logs', logsJson);
     this.calculateTotals();
+    if (this.isLoggedIn) {
+      await this.saveUserDataToFirebase();
+    }
   }
 
   clearLatestAnalysis(): void {
@@ -720,6 +772,96 @@ export class AppComponent implements OnInit {
       console.log('Reminders cancelled.');
     } catch (e) {
       console.error('Failed to cancel reminders:', e);
+    }
+  }
+
+  // Firebase Remote Integration Helpers
+  async loadUserDataFromFirebase(): Promise<void> {
+    try {
+      const remoteData = await this.firebaseService.loadUserData();
+      if (remoteData) {
+        if (remoteData.user_profile) {
+          this.profileName = remoteData.user_profile.name || this.profileName;
+          this.profileAge = remoteData.user_profile.age || this.profileAge;
+          this.profileGender = remoteData.user_profile.gender || this.profileGender;
+          this.profileWeight = remoteData.user_profile.weight || this.profileWeight;
+          this.profileHeight = remoteData.user_profile.height || this.profileHeight;
+          this.profileActivity = remoteData.user_profile.activity || this.profileActivity;
+          this.profileGoal = remoteData.user_profile.goal || this.profileGoal;
+        }
+        this.foodLogs = remoteData.food_logs || this.foodLogs;
+        this.healthMode = remoteData.health_mode || this.healthMode;
+        this.manualSteps = remoteData.manual_steps || this.manualSteps;
+        this.manualSleep = remoteData.manual_sleep || this.manualSleep;
+        this.remindersEnabled = remoteData.reminders_enabled !== undefined ? remoteData.reminders_enabled : this.remindersEnabled;
+        this.healthTimeFilter = remoteData.health_time_filter || this.healthTimeFilter;
+
+        this.calculateTotals();
+        this.recalculateGoals();
+      }
+    } catch (e) {
+      console.error('Failed to load user data from Firebase:', e);
+    }
+  }
+
+  async saveUserDataToFirebase(): Promise<void> {
+    try {
+      const payload = {
+        user_profile: {
+          name: this.profileName,
+          age: this.profileAge,
+          gender: this.profileGender,
+          weight: this.profileWeight,
+          height: this.profileHeight,
+          activity: this.profileActivity,
+          goal: this.profileGoal
+        },
+        food_logs: this.foodLogs,
+        health_mode: this.healthMode,
+        manual_steps: this.manualSteps,
+        manual_sleep: this.manualSleep,
+        reminders_enabled: this.remindersEnabled,
+        health_time_filter: this.healthTimeFilter
+      };
+      await this.firebaseService.saveUserData(payload);
+    } catch (e) {
+      console.error('Failed to save user data to Firebase:', e);
+    }
+  }
+
+  async handleFirebaseSubmit(): Promise<void> {
+    if (!this.firebaseEmail.trim() || !this.firebasePassword.trim()) {
+      this.firebaseError = 'Please fill out all fields.';
+      return;
+    }
+    this.isFirebaseBusy = true;
+    this.firebaseError = null;
+    try {
+      if (this.isLoginMode) {
+        await this.firebaseService.login(this.firebaseEmail, this.firebasePassword);
+      } else {
+        await this.firebaseService.signup(this.firebaseEmail, this.firebasePassword);
+      }
+      this.isLoggedIn = true;
+      await this.loadUserDataFromFirebase();
+      await this.syncHealthData();
+    } catch (e: any) {
+      console.error(e);
+      this.firebaseError = e.message || 'Authentication failed.';
+    } finally {
+      this.isFirebaseBusy = false;
+    }
+  }
+
+  async handleFirebaseLogout(): Promise<void> {
+    try {
+      await this.firebaseService.logout();
+      this.isLoggedIn = false;
+      // Reset state to defaults on logout
+      this.foodLogs = [];
+      this.calculateTotals();
+    } catch (e) {
+      console.error('Failed to log out:', e);
     }
   }
 }
