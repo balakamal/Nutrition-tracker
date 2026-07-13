@@ -7,6 +7,8 @@ import {
   createUserWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
   User 
 } from 'firebase/auth';
 import { 
@@ -132,6 +134,21 @@ export class FirebaseService {
       }
     } else {
       const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+      this.currentUserEmail = userCredential.user.email;
+      this.currentUserId = userCredential.user.uid;
+      return userCredential.user;
+    }
+  }
+
+  async loginWithGoogle(): Promise<any> {
+    if (this.isMockMode) {
+      this.currentUserEmail = 'google-user@gmail.com';
+      this.currentUserId = 'mock_uid_googleuser';
+      await Preferences.set({ key: 'mock_current_user', value: this.currentUserEmail });
+      return { email: this.currentUserEmail, uid: this.currentUserId };
+    } else {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(this.auth, provider);
       this.currentUserEmail = userCredential.user.email;
       this.currentUserId = userCredential.user.uid;
       return userCredential.user;

@@ -853,6 +853,22 @@ export class AppComponent implements OnInit {
     }
   }
 
+  async handleFirebaseGoogleLogin(): Promise<void> {
+    this.isFirebaseBusy = true;
+    this.firebaseError = null;
+    try {
+      await this.firebaseService.loginWithGoogle();
+      this.isLoggedIn = true;
+      await this.loadUserDataFromFirebase();
+      await this.syncHealthData();
+    } catch (e: any) {
+      console.error(e);
+      this.firebaseError = e.message || 'Google Sign-In failed.';
+    } finally {
+      this.isFirebaseBusy = false;
+    }
+  }
+
   async handleFirebaseLogout(): Promise<void> {
     try {
       await this.firebaseService.logout();
