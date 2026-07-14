@@ -9,6 +9,7 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import com.getcapacitor.JSArray
@@ -125,12 +126,13 @@ class HealthConnectPlugin : Plugin() {
             try {
                 val now = Instant.now()
                 val startOfDay = now.truncatedTo(ChronoUnit.DAYS)
-                val request = ReadRecordsRequest(
-                    recordType = StepsRecord::class,
-                    timeRangeFilter = TimeRangeFilter.between(startOfDay, now)
+                val response = client.aggregate(
+                    AggregateRequest(
+                        metrics = setOf(StepsRecord.COUNT_TOTAL),
+                        timeRangeFilter = TimeRangeFilter.between(startOfDay, now)
+                    )
                 )
-                val response = client.readRecords(request)
-                val totalSteps = response.records.sumOf { it.count }
+                val totalSteps = response[StepsRecord.COUNT_TOTAL] ?: 0L
                 val res = JSObject()
                 res.put("steps", totalSteps)
                 res.put("available", true)
@@ -191,18 +193,18 @@ class HealthConnectPlugin : Plugin() {
 
                 when (type) {
                     "steps" -> {
-                        val request = ReadRecordsRequest(
-                            recordType = StepsRecord::class,
-                            timeRangeFilter = timeRangeFilter
+                        val response = client.aggregate(
+                            AggregateRequest(
+                                metrics = setOf(StepsRecord.COUNT_TOTAL),
+                                timeRangeFilter = timeRangeFilter
+                            )
                         )
-                        val response = client.readRecords(request)
-                        for (record in response.records) {
-                            val obj = JSObject()
-                            obj.put("count", record.count)
-                            obj.put("startTime", record.startTime.toString())
-                            obj.put("endTime", record.endTime.toString())
-                            recordsArray.put(obj)
-                        }
+                        val totalSteps = response[StepsRecord.COUNT_TOTAL] ?: 0L
+                        val obj = JSObject()
+                        obj.put("count", totalSteps)
+                        obj.put("startTime", startTimeStr)
+                        obj.put("endTime", endTimeStr)
+                        recordsArray.put(obj)
                     }
                     "sleep" -> {
                         val request = ReadRecordsRequest(

@@ -12,6 +12,7 @@
   /* Standard Shadows & Transitions */
   --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.55);
   --shadow-glow: 0 0 24px rgba(0, 230, 204, 0.06);
+  --ring-glow: drop-shadow(0 0 4px var(--color-primary));
   --transition-smooth: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
   --transition-bounce: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
@@ -77,6 +78,7 @@
   --color-workout: #ff6d00;
   
   --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.55);
+  --ring-glow: drop-shadow(0 0 4px var(--color-primary));
 }
 
 /* Explicit Light Theme */
@@ -110,6 +112,7 @@
   --color-workout: #e65100;
   
   --shadow-premium: 0 16px 36px -12px rgba(8, 15, 30, 0.06), 0 4px 12px -5px rgba(8, 15, 30, 0.02);
+  --ring-glow: none;
 }
 
 /* Global Reset & Base Styles */

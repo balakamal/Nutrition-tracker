@@ -278,7 +278,7 @@
                   stroke-linecap="round"
                   [attr.stroke-dasharray]="276.46" 
                   [attr.stroke-dashoffset]="276.46 - (276.46 * getCaloriePercentage() / 100)"
-                  style="transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); filter: drop-shadow(0 0 4px var(--color-primary));">
+                  style="transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); filter: var(--ring-glow);">
           </circle>
         </svg>
         
@@ -326,6 +326,35 @@
             <div [style.width.%]="getFatPercentage()" style="height: 100%; background-color: var(--color-fat); transition: var(--transition-smooth);"></div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Aether Advisor Daily AI Summary Card -->
+    <div class="glass-card" style="margin-top: 10px; border-color: rgba(0, 176, 255, 0.15); background: linear-gradient(135deg, rgba(15, 16, 23, 0.9) 0%, rgba(0, 176, 255, 0.03) 100%);">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--color-primary); letter-spacing: 0.1em;">Aether AI Advisor</span>
+      </div>
+
+      <div *ngIf="!dailySummaryText" style="text-align: center; padding: 10px 0;">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Generate today's personalized AI review of nutrition, goals, steps, and habits.</p>
+        <button class="btn-primary" (click)="triggerDailySummary()" [disabled]="isGeneratingSummary" style="font-size: 0.75rem; padding: 10px 20px; width: 100%;">
+          <span *ngIf="!isGeneratingSummary">Analyze Daily Summary</span>
+          <span *ngIf="isGeneratingSummary">Analyzing stats...</span>
+        </button>
+      </div>
+
+      <div *ngIf="dailySummaryText" class="animate-fade-up">
+        <!-- Render summary text with formatted markdown blocks -->
+        <div style="font-size: 0.82rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 14px; text-align: left; white-space: pre-wrap;">
+          {{ dailySummaryText }}
+        </div>
+        <button class="btn-secondary" (click)="triggerDailySummary()" [disabled]="isGeneratingSummary" style="font-size: 0.75rem; padding: 8px 16px; width: 100%; border-color: var(--glass-border);">
+          {{ isGeneratingSummary ? 'Refreshing...' : 'Re-generate Summary' }}
+        </button>
+      </div>
+
+      <div *ngIf="summaryError" style="margin-top: 10px; background-color: rgba(255, 23, 68, 0.1); border: 1px solid rgba(255, 23, 68, 0.2); color: #ff1744; font-size: 0.75rem; padding: 10px; border-radius: var(--radius-expressive-md);">
+        {{ summaryError }}
       </div>
     </div>
 
@@ -603,6 +632,18 @@
             <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-top: 10px;">
               {{ log.description || 'No description available for this entry.' }}
             </p>
+            
+            <!-- Micronutrient badges if present -->
+            <div *ngIf="(log.vitamins && log.vitamins.length > 0) || (log.minerals && log.minerals.length > 0)" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;">
+              <div *ngIf="log.vitamins && log.vitamins.length > 0" style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px;">Vitamins:</span>
+                <span *ngFor="let vit of log.vitamins" style="font-size: 0.65rem; background-color: rgba(255,255,255,0.05); color: var(--text-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--glass-border);">{{ vit }}</span>
+              </div>
+              <div *ngIf="log.minerals && log.minerals.length > 0" style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px;">Minerals:</span>
+                <span *ngFor="let min of log.minerals" style="font-size: 0.65rem; background-color: rgba(255,255,255,0.05); color: var(--text-secondary); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--glass-border);">{{ min }}</span>
+              </div>
+            </div>
             
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; flex-wrap: wrap;">
               <!-- Macro pills -->

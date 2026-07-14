@@ -67,6 +67,9 @@ export class AppComponent implements OnInit {
   workouts: any[] = [];
   isSyncing = false;
   expandedLogIndex: number | null = null;
+  dailySummaryText: string | null = null;
+  isGeneratingSummary = false;
+  summaryError: string | null = null;
 
   // Firebase Integration State
   isLoggedIn = true;
@@ -121,6 +124,7 @@ export class AppComponent implements OnInit {
     await this.initHealthConnect();
     this.initTheme();
     await this.initReminders();
+    await this.checkAndAutoSummary();
   }
 
   // Theme Management
@@ -809,6 +813,45 @@ export class AppComponent implements OnInit {
       this.calculateTotals();
     } catch (e) {
       console.error('Failed to log out:', e);
+    }
+  }
+
+  async triggerDailySummary(): Promise<void> {
+    this.isGeneratingSummary = true;
+    this.summaryError = null;
+    try {
+      const sleepMinutes = this.healthMode === 'manual' ? this.manualSleep : (this.sleepSessions[0]?.durationMinutes || 0);
+      const summary = await this.geminiService.generateDailySummary(
+        this.foodLogs,
+        this.dailySteps,
+        sleepMinutes,
+        this.targetCalories,
+        this.targetProtein,
+        this.targetCarbs,
+        this.targetFat
+      );
+      this.dailySummaryText = summary;
+      const todayStr = new Date().toDateString();
+      await Preferences.set({ key: `summary_${todayStr}`, value: summary });
+      localStorage.setItem(`summary_${todayStr}`, summary);
+    } catch (e: any) {
+      this.summaryError = e?.message || 'Failed to generate summary.';
+    } finally {
+      this.isGeneratingSummary = false;
+    }
+  }
+
+  async checkAndAutoSummary(): Promise<void> {
+    const todayStr = new Date().toDateString();
+    const { value: savedSummary } = await Preferences.get({ key: `summary_${todayStr}` });
+    const localSummary = savedSummary || localStorage.getItem(`summary_${todayStr}`);
+    if (localSummary) {
+      this.dailySummaryText = localSummary;
+    } else {
+      const currentHour = new Date().getHours();
+      if (currentHour >= 21) {
+        await this.triggerDailySummary();
+      }
     }
   }
 }
