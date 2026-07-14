@@ -27,6 +27,11 @@ export interface FirebaseConfig {
   appId: string;
 }
 
+// BUNDLED DEFAULT CONFIGURATION (OPTIONAL)
+// Paste your own project's Firebase Web Config object here once to build it directly into the app!
+// Example: export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig | null = { apiKey: "...", ... };
+export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig | null = null;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -69,6 +74,10 @@ export class FirebaseService {
       } catch (e) {
         console.error('Failed to parse firebase config', e);
       }
+    }
+    // Fall back to default bundled config if configured
+    if (DEFAULT_FIREBASE_CONFIG && DEFAULT_FIREBASE_CONFIG.apiKey) {
+      return DEFAULT_FIREBASE_CONFIG;
     }
     return null;
   }
