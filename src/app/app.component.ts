@@ -87,29 +87,7 @@ export class AppComponent implements OnInit {
   isChatLogging = false;
   chatError: string | null = null;
 
-  // Pre-coded demo image base64 strings to facilitate instant testing
-  demoFoods = [
-    {
-      name: 'Avocado Toast with Egg',
-      mimeType: 'image/jpeg',
-      base64: '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=', // Minimal dummy jpeg base64
-      calories: 380,
-      protein: 14,
-      carbs: 32,
-      fat: 22,
-      description: 'Sourdough toast topped with mashed avocado, a poached egg, and red pepper flakes.'
-    },
-    {
-      name: 'Grilled Salmon with Quinoa',
-      mimeType: 'image/jpeg',
-      base64: '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=',
-      calories: 540,
-      protein: 38,
-      carbs: 45,
-      fat: 22,
-      description: 'Atlantic salmon filet served over herbed quinoa and steamed asparagus.'
-    }
-  ];
+  demoFoods: any[] = [];
 
   constructor(
     private healthService: HealthConnectService,
@@ -490,25 +468,7 @@ export class AppComponent implements OnInit {
         console.error('Failed to parse saved food logs, using defaults', e);
       }
     } else {
-      // Default initial static logs to make the dashboard look nice on first load
-      this.foodLogs = [
-        {
-          mealName: 'Greek Yogurt Bowl',
-          calories: 320,
-          protein: 24,
-          carbs: 38,
-          fat: 8,
-          description: 'Greek yogurt with honey, granola, and mixed berries.'
-        },
-        {
-          mealName: 'Grilled Chicken Salad',
-          calories: 450,
-          protein: 42,
-          carbs: 18,
-          fat: 22,
-          description: 'Grilled chicken breast on mixed greens with olive oil dressing.'
-        }
-      ];
+      this.foodLogs = [];
       const logsJson = JSON.stringify(this.foodLogs);
       await Preferences.set({ key: 'food_logs', value: logsJson });
       localStorage.setItem('food_logs', logsJson);
@@ -552,37 +512,6 @@ export class AppComponent implements OnInit {
       if (this.isLoggedIn) {
         await this.saveUserDataToFirebase();
       }
-    }
-  }
-
-  // Vision Analysis Operations
-  async triggerDemoAnalysis(demo: any): Promise<void> {
-    this.isAnalyzing = true;
-    this.analysisError = null;
-    this.uploadedFileName = demo.name;
-
-    try {
-      const hasKey = await this.geminiService.hasApiKey();
-      const apiKey = await this.geminiService.getApiKey();
-      if (hasKey && !apiKey?.startsWith('AIzaSyMock')) {
-        const result = await this.geminiService.analyzeFoodImage(demo.base64, demo.mimeType);
-        await this.addFoodLog(result);
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        const result: FoodAnalysisResult = {
-          mealName: demo.name,
-          calories: demo.calories,
-          protein: demo.protein,
-          carbs: demo.carbs,
-          fat: demo.fat,
-          description: demo.description
-        };
-        await this.addFoodLog(result);
-      }
-    } catch (err: any) {
-      this.analysisError = err?.message || 'Failed to analyze food image.';
-    } finally {
-      this.isAnalyzing = false;
     }
   }
 
