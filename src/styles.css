@@ -167,13 +167,21 @@ p {
 
 /* Premium Layout Components */
 .app-container {
-  max-width: 460px; /* High-end mobile viewport */
+  width: 100%;
+  max-width: 480px; /* Portrait mobile max width */
   margin: 0 auto;
   min-height: 100vh;
   background-color: var(--bg-surface);
   position: relative;
   box-shadow: 0 0 100px rgba(0, 0, 0, 0.7);
   padding: 24px 20px 80px;
+  transition: max-width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@media (min-width: 768px) or (orientation: landscape) {
+  .app-container {
+    max-width: 1000px; /* Responsive wide view */
+  }
 }
 
 /* Glassmorphism Cards */
@@ -336,4 +344,140 @@ p {
 .btn-clear-logs:hover {
   background-color: rgba(255, 23, 68, 0.1) !important;
   color: var(--color-fat) !important;
+}
+
+/* Responsive Grid for Columns in Landscape/Desktop */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.dashboard-col-left, .dashboard-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (min-width: 768px) or (orientation: landscape) {
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* Premium Conversational Chat Input Bar */
+.chat-input-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.chat-input-bar {
+  display: flex;
+  align-items: center;
+  background-color: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  padding: 4px 6px;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.chat-input-bar:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 176, 255, 0.15);
+}
+
+/* Rounded Add + and Send Buttons */
+.chat-btn-add {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+
+.chat-btn-add:hover {
+  background-color: var(--btn-secondary-hover);
+  border-color: var(--glass-border-hover);
+  transform: scale(1.05);
+}
+
+.chat-send-btn {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0091ea 100%);
+  border: none;
+  color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+
+.chat-send-btn:hover {
+  transform: scale(1.05) rotate(-10deg);
+  filter: brightness(1.1);
+}
+
+.chat-send-btn:disabled {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--glass-border);
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Dropdown Menu Popup */
+.chat-dropdown {
+  position: absolute;
+  bottom: 56px;
+  left: 6px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-expressive-md);
+  box-shadow: var(--shadow-premium);
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.chat-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.chat-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
 }

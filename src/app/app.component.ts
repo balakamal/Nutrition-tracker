@@ -96,6 +96,11 @@ export class AppComponent implements OnInit {
   refinePrompt = '';
   isManualEntry = false;
 
+  // Camera & Dropdown states
+  showCamera = false;
+  showAddMenu = false;
+  private cameraStream: MediaStream | null = null;
+
   demoFoods: any[] = [];
 
   constructor(
@@ -685,6 +690,59 @@ export class AppComponent implements OnInit {
     this.pendingAnalysisResult = null;
     this.refinePrompt = '';
     this.isManualEntry = false;
+  }
+
+  async startCamera(): Promise<void> {
+    this.showCamera = true;
+    this.analysisError = null;
+    
+    // Allow the DOM to render the video element
+    setTimeout(async () => {
+      try {
+        const video = document.getElementById('cameraVideo') as HTMLVideoElement;
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
+        });
+        this.cameraStream = stream;
+        if (video) {
+          video.srcObject = stream;
+          video.play();
+        }
+      } catch (err: any) {
+        console.error('Error accessing camera:', err);
+        this.analysisError = 'Could not access camera. Please check permissions.';
+        this.stopCamera();
+      }
+    }, 100);
+  }
+
+  capturePhoto(): void {
+    const video = document.getElementById('cameraVideo') as HTMLVideoElement;
+    const canvas = document.getElementById('cameraCanvas') as HTMLCanvasElement;
+    if (video && canvas) {
+      const context = canvas.getContext('2d');
+      if (context) {
+        // Match canvas dimensions to video feed
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const base64Data = canvas.toDataURL('image/jpeg');
+        this.selectedImageBase64 = base64Data;
+        this.selectedImageMimeType = 'image/jpeg';
+        this.selectedImageName = `camera_capture_${Date.now()}.jpg`;
+      }
+    }
+    this.stopCamera();
+  }
+
+  stopCamera(): void {
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+      this.cameraStream = null;
+    }
+    this.showCamera = false;
   }
 
   // Progress Percentages
