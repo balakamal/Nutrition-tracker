@@ -73,7 +73,7 @@ export class HealthConnectService {
 
     try {
       await HealthConnect.requestPermission({
-        read: ['steps', 'sleep', 'exercise'],
+        read: ['steps', 'sleep', 'exercise', 'weight', 'hydration', 'heartRate', 'caloriesBurned', 'distance'],
         write: []
       });
       return true;
@@ -178,6 +178,86 @@ export class HealthConnectService {
       return response.records || [];
     } catch (error) {
       console.error('Failed to read workouts from Health Connect:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetches weight records for a specified timeframe.
+   */
+  async getWeight(startTime?: string, endTime?: string): Promise<any[]> {
+    if (!this.isAndroid) return [];
+    try {
+      const start = startTime || new Date(Date.now() - 7 * 86400000).toISOString();
+      const end = endTime || new Date().toISOString();
+      const response = await HealthConnect.readRecords({ type: 'weight', startTime: start, endTime: end });
+      return response.records || [];
+    } catch (error) {
+      console.error('Failed to read weight from Health Connect:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetches hydration (water) records.
+   */
+  async getHydration(startTime?: string, endTime?: string): Promise<any[]> {
+    if (!this.isAndroid) return [];
+    try {
+      const start = startTime || new Date(Date.now() - 7 * 86400000).toISOString();
+      const end = endTime || new Date().toISOString();
+      const response = await HealthConnect.readRecords({ type: 'hydration', startTime: start, endTime: end });
+      return response.records || [];
+    } catch (error) {
+      console.error('Failed to read hydration from Health Connect:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetches heart rate samples.
+   */
+  async getHeartRate(startTime?: string, endTime?: string): Promise<any[]> {
+    if (!this.isAndroid) return [];
+    try {
+      const start = startTime || new Date(Date.now() - 7 * 86400000).toISOString();
+      const end = endTime || new Date().toISOString();
+      const response = await HealthConnect.readRecords({ type: 'heartRate', startTime: start, endTime: end });
+      return response.records || [];
+    } catch (error) {
+      console.error('Failed to read heart rate from Health Connect:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetches active calories burned records.
+   */
+  async getCaloriesBurned(startTime?: string, endTime?: string): Promise<any[]> {
+    if (!this.isAndroid) return [];
+    try {
+      const start = startTime || new Date(Date.now() - 7 * 86400000).toISOString();
+      const end = endTime || new Date().toISOString();
+      const response = await HealthConnect.readRecords({ type: 'caloriesBurned', startTime: start, endTime: end });
+      return response.records || [];
+    } catch (error) {
+      console.error('Failed to read calories burned from Health Connect:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetches distance records.
+   */
+  async getDistance(startTime?: string, endTime?: string): Promise<any[]> {
+    if (!this.isAndroid) return [];
+    try {
+      const start = startTime || new Date(Date.now() - 7 * 86400000).toISOString();
+      const end = endTime || new Date().toISOString();
+      const response = await HealthConnect.readRecords({ type: 'distance', startTime: start, endTime: end });
+      return response.records || [];
+    } catch (error) {
+      console.error('Failed to read distance from Health Connect:', error);
       return [];
     }
   }

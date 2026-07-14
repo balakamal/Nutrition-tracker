@@ -600,22 +600,46 @@
           </div>
 
           <!-- Manual Input Override Form -->
-          <div *ngIf="healthMode === 'manual'" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; padding: 16px; border-radius: var(--radius-expressive-md); background-color: var(--row-bg); border: 1px solid var(--glass-border);">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div *ngIf="healthMode === 'manual'" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; padding: 16px; border-radius: var(--radius-expressive-md); background-color: var(--row-bg); border: 1px solid var(--glass-border);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <div class="input-group" style="margin-bottom: 0;">
                 <label style="font-size: 0.7rem;">Steps</label>
-                <input type="number" class="form-input" [(ngModel)]="manualSteps" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
+                <input type="number" class="form-input" [(ngModel)]="manualSteps" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
               </div>
               <div class="input-group" style="margin-bottom: 0;">
                 <label style="font-size: 0.7rem;">Sleep (Mins)</label>
-                <input type="number" class="form-input" [(ngModel)]="manualSleep" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
+                <input type="number" class="form-input" [(ngModel)]="manualSleep" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
               </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="input-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.7rem;">Weight (kg)</label>
+                <input type="number" class="form-input" [(ngModel)]="manualWeight" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
+              </div>
+              <div class="input-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.7rem;">Hydration (L)</label>
+                <input type="number" step="0.1" class="form-input" [(ngModel)]="manualHydration" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="input-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.7rem;">Heart Rate (bpm)</label>
+                <input type="number" class="form-input" [(ngModel)]="manualHeartRate" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
+              </div>
+              <div class="input-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.7rem;">Distance (m)</label>
+                <input type="number" class="form-input" [(ngModel)]="manualDistance" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
+              </div>
+            </div>
+            <div class="input-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.7rem;">Active Calories Burned (kcal)</label>
+              <input type="number" class="form-input" [(ngModel)]="manualCaloriesBurned" (ngModelChange)="syncHealthData()" style="padding: 8px 12px; height: 38px;">
             </div>
           </div>
 
           <!-- If permission rationale required or not linked -->
           <div *ngIf="healthMode === 'sync' && healthConnectStatus === 'Available' && dailySteps === 0 && !isSyncing" style="margin-bottom: 20px; background-color: var(--row-bg); border: 1px solid var(--glass-border); padding: 18px; border-radius: var(--radius-expressive-md); text-align: center;">
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.45;">Sync steps, sleep, and workouts directly from your Google Health Connect data.</p>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.45;">Sync steps, weight, hydration, and workouts directly from your Google Health Connect data.</p>
             <button class="btn-primary" style="width: 100%; font-size: 0.75rem; padding: 12px;" (click)="requestHealthConnectPermission()">
               Authorize & Sync
             </button>
@@ -627,12 +651,12 @@
             <p style="margin-top: 8px; font-size: 0.75rem; color: var(--color-steps); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">Syncing...</p>
           </div>
 
-          <!-- Metrics Display (Simplified Horizontal Bars) -->
-          <div *ngIf="(healthConnectStatus === 'Available' || healthMode === 'manual') && (dailySteps > 0 || sleepSessions.length > 0 || workouts.length > 0)" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Metrics Display (Comprehensive health statistics) -->
+          <div class="animate-fade-up" style="display: flex; flex-direction: column; gap: 14px;">
             
-            <!-- Steps Bar -->
+            <!-- Steps Metric -->
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">
                 <span class="text-steps" style="text-transform: uppercase; letter-spacing: 0.05em;">Steps</span>
                 <span>{{ dailySteps | number }} / 10,000</span>
               </div>
@@ -641,26 +665,63 @@
               </div>
             </div>
 
-            <!-- Sleep Bar -->
+            <!-- Sleep Metric -->
             <div *ngIf="sleepSessions.length > 0 || healthMode === 'manual'">
-              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">
                 <span class="text-sleep" style="text-transform: uppercase; letter-spacing: 0.05em;">Sleep</span>
                 <span *ngIf="healthMode === 'manual'">{{ Math.floor(manualSleep / 60) }}h {{ manualSleep % 60 }}m</span>
-                <span *ngIf="healthMode === 'sync'">{{ Math.floor(sleepSessions[0]?.durationMinutes / 60) || 0 }}h {{ (sleepSessions[0]?.durationMinutes % 60) || 0 }}m</span>
+                <span *ngIf="healthMode === 'sync'">{{ Math.floor((sleepSessions[0]?.durationMinutes || 0) / 60) }}h {{ (sleepSessions[0]?.durationMinutes || 0) % 60 }}m</span>
               </div>
               <div style="height: 6px; background-color: var(--bg-secondary); border-radius: 3px; overflow: hidden; border: 1px solid var(--glass-border);">
                 <div [style.width.%]="healthMode === 'manual' ? Math.min(100, Math.round((manualSleep / 480) * 100)) : Math.min(100, Math.round(((sleepSessions[0]?.durationMinutes || 0) / 480) * 100))" style="height: 100%; background-color: var(--color-sleep); transition: var(--transition-smooth); box-shadow: 0 0 8px var(--color-sleep);"></div>
               </div>
             </div>
 
-            <!-- Workouts summary -->
-            <div *ngIf="workouts.length > 0">
-              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">
-                <span class="text-workout" style="text-transform: uppercase; letter-spacing: 0.05em;">Workouts</span>
-                <span class="text-workout">{{ workouts.length }} active ({{ workouts[0]?.caloriesBurned || 0 }} kcal)</span>
+            <!-- Hydration Metric -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 4px;">
+                <span style="color: #00b0ff; text-transform: uppercase; letter-spacing: 0.05em;">Hydration</span>
+                <span>{{ dailyHydration | number:'1.1-2' }}L / 3.0L</span>
               </div>
               <div style="height: 6px; background-color: var(--bg-secondary); border-radius: 3px; overflow: hidden; border: 1px solid var(--glass-border);">
-                <div style="width: 100%; height: 100%; background-color: var(--color-workout); box-shadow: 0 0 8px var(--color-workout);"></div>
+                <div [style.width.%]="Math.min(100, Math.round((dailyHydration / 3.0) * 100))" style="height: 100%; background-color: #00b0ff; transition: var(--transition-smooth); box-shadow: 0 0 8px #00b0ff;"></div>
+              </div>
+            </div>
+
+            <!-- Compact horizontal metrics grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;">
+              <!-- Weight -->
+              <div style="background-color: var(--row-bg); border-radius: 10px; padding: 10px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Weight</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary);">
+                  {{ dailyWeight ? dailyWeight + ' kg' : '--' }}
+                </span>
+              </div>
+
+              <!-- Heart Rate -->
+              <div style="background-color: var(--row-bg); border-radius: 10px; padding: 10px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Heart Rate</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: #ff1744;">
+                  {{ avgHeartRate ? avgHeartRate + ' bpm' : '--' }}
+                </span>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <!-- Distance -->
+              <div style="background-color: var(--row-bg); border-radius: 10px; padding: 10px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Distance</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--color-carbs);">
+                  {{ dailyDistance ? (dailyDistance / 1000 | number:'1.1-2') + ' km' : '0.0 km' }}
+                </span>
+              </div>
+
+              <!-- Active Calories Burned -->
+              <div style="background-color: var(--row-bg); border-radius: 10px; padding: 10px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Active Cal</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--color-calories);">
+                  {{ activeCaloriesBurned | number }} kcal
+                </span>
               </div>
             </div>
 
@@ -735,7 +796,10 @@
         <!-- Food Log History list -->
         <div class="glass-card" style="margin-bottom: 0;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h2 style="font-size: 1.25rem; margin: 0;">Daily Logs</h2>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h2 style="font-size: 1.25rem; margin: 0;">Daily Logs</h2>
+              <button (click)="startManualLog()" style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); color: var(--color-primary); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: var(--transition-smooth);" title="Add Log Manually">+</button>
+            </div>
             <button *ngIf="foodLogs.length > 0" (click)="clearFoodLogs()" style="background: none; border: none; color: hsl(352, 85%, 60%); font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; transition: var(--transition-smooth);" class="btn-clear-logs">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
                 <polyline points="3 6 5 6 21 6"></polyline>

@@ -38,6 +38,11 @@ export class AppComponent implements OnInit {
   healthMode: 'sync' | 'manual' = 'sync';
   manualSteps = 8000;
   manualSleep = 480; // minutes
+  manualWeight = 70; // kg
+  manualHydration = 2.0; // Liters
+  manualHeartRate = 72; // bpm
+  manualDistance = 5000; // meters
+  manualCaloriesBurned = 300; // kcal
 
   // Nutrition Goal and Intake State
   targetCalories = 2500;
@@ -65,6 +70,14 @@ export class AppComponent implements OnInit {
   dailySteps = 0;
   sleepSessions: any[] = [];
   workouts: any[] = [];
+  
+  // Synced health metrics
+  dailyWeight: number | null = null;
+  dailyHydration = 0; // Liters
+  avgHeartRate: number | null = null;
+  activeCaloriesBurned = 0;
+  dailyDistance = 0; // meters
+
   isSyncing = false;
   expandedLogIndex: number | null = null;
   dailySummaryText: string | null = null;
@@ -480,10 +493,15 @@ export class AppComponent implements OnInit {
           title: 'Manual Exercise Activity',
           startTime: new Date(Date.now() - 3600000).toISOString(),
           durationMinutes: 45,
-          caloriesBurned: 300,
+          caloriesBurned: this.manualCaloriesBurned,
           type: 'General'
         }
       ];
+      this.dailyWeight = this.manualWeight;
+      this.dailyHydration = this.manualHydration;
+      this.avgHeartRate = this.manualHeartRate;
+      this.activeCaloriesBurned = this.manualCaloriesBurned;
+      this.dailyDistance = this.manualDistance;
       return;
     }
 
@@ -494,6 +512,32 @@ export class AppComponent implements OnInit {
       this.dailySteps = await this.healthService.getDailySteps(bounds.startTime, bounds.endTime);
       this.sleepSessions = await this.healthService.getSleepSessions(bounds.startTime, bounds.endTime);
       this.workouts = await this.healthService.getWorkouts(bounds.startTime, bounds.endTime);
+
+      // Synced metrics
+      const weightLogs = await this.healthService.getWeight(bounds.startTime, bounds.endTime);
+      this.dailyWeight = weightLogs.length > 0 ? Number(weightLogs[weightLogs.length - 1].weightKg) : null;
+
+      const hydrationLogs = await this.healthService.getHydration(bounds.startTime, bounds.endTime);
+      this.dailyHydration = hydrationLogs.reduce((sum: number, log: any) => sum + Number(log.volumeLiters || 0), 0);
+
+      const heartRateLogs = await this.healthService.getHeartRate(bounds.startTime, bounds.endTime);
+      let totalBpm = 0;
+      let sampleCount = 0;
+      for (const log of heartRateLogs) {
+        if (log.samples && log.samples.length > 0) {
+          for (const sample of log.samples) {
+            totalBpm += Number(sample.bpm || 0);
+            sampleCount++;
+          }
+        }
+      }
+      this.avgHeartRate = sampleCount > 0 ? Math.round(totalBpm / sampleCount) : null;
+
+      const caloriesLogs = await this.healthService.getCaloriesBurned(bounds.startTime, bounds.endTime);
+      this.activeCaloriesBurned = caloriesLogs.reduce((sum: number, log: any) => sum + Number(log.calories || 0), 0);
+
+      const distanceLogs = await this.healthService.getDistance(bounds.startTime, bounds.endTime);
+      this.dailyDistance = distanceLogs.reduce((sum: number, log: any) => sum + Number(log.distanceMeters || 0), 0);
     } catch (e) {
       console.error('Failed to sync Health Connect data', e);
     } finally {

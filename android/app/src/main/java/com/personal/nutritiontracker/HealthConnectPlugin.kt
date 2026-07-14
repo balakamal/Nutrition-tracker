@@ -8,6 +8,11 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.HydrationRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
+import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -30,7 +35,12 @@ class HealthConnectPlugin : Plugin() {
     private val PERMISSIONS = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(SleepSessionRecord::class),
-        HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(HydrationRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class)
     )
 
     private fun getClient(): HealthConnectClient? {
@@ -238,6 +248,82 @@ class HealthConnectPlugin : Plugin() {
                             obj.put("caloriesBurned", 240) // Standard default estimation for UI display
                             val typeStr = mapExerciseType(record.exerciseType)
                             obj.put("type", typeStr)
+                            recordsArray.put(obj)
+                        }
+                    }
+                    "weight" -> {
+                        val request = ReadRecordsRequest(
+                            recordType = WeightRecord::class,
+                            timeRangeFilter = timeRangeFilter
+                        )
+                        val response = client.readRecords(request)
+                        for (record in response.records) {
+                            val obj = JSObject()
+                            obj.put("time", record.time.toString())
+                            obj.put("weightKg", record.weight.inKilograms)
+                            recordsArray.put(obj)
+                        }
+                    }
+                    "hydration" -> {
+                        val request = ReadRecordsRequest(
+                            recordType = HydrationRecord::class,
+                            timeRangeFilter = timeRangeFilter
+                        )
+                        val response = client.readRecords(request)
+                        for (record in response.records) {
+                            val obj = JSObject()
+                            obj.put("startTime", record.startTime.toString())
+                            obj.put("endTime", record.endTime.toString())
+                            obj.put("volumeLiters", record.volume.inLiters)
+                            recordsArray.put(obj)
+                        }
+                    }
+                    "heartRate" -> {
+                        val request = ReadRecordsRequest(
+                            recordType = HeartRateRecord::class,
+                            timeRangeFilter = timeRangeFilter
+                        )
+                        val response = client.readRecords(request)
+                        for (record in response.records) {
+                            val obj = JSObject()
+                            obj.put("startTime", record.startTime.toString())
+                            obj.put("endTime", record.endTime.toString())
+                            val samplesArray = JSArray()
+                            for (sample in record.samples) {
+                                val sObj = JSObject()
+                                sObj.put("time", sample.time.toString())
+                                sObj.put("bpm", sample.beatsPerMinute)
+                                samplesArray.put(sObj)
+                            }
+                            obj.put("samples", samplesArray)
+                            recordsArray.put(obj)
+                        }
+                    }
+                    "caloriesBurned" -> {
+                        val request = ReadRecordsRequest(
+                            recordType = ActiveCaloriesBurnedRecord::class,
+                            timeRangeFilter = timeRangeFilter
+                        )
+                        val response = client.readRecords(request)
+                        for (record in response.records) {
+                            val obj = JSObject()
+                            obj.put("startTime", record.startTime.toString())
+                            obj.put("endTime", record.endTime.toString())
+                            obj.put("calories", record.energy.inKilocalories)
+                            recordsArray.put(obj)
+                        }
+                    }
+                    "distance" -> {
+                        val request = ReadRecordsRequest(
+                            recordType = DistanceRecord::class,
+                            timeRangeFilter = timeRangeFilter
+                        )
+                        val response = client.readRecords(request)
+                        for (record in response.records) {
+                            val obj = JSObject()
+                            obj.put("startTime", record.startTime.toString())
+                            obj.put("endTime", record.endTime.toString())
+                            obj.put("distanceMeters", record.distance.inMeters)
                             recordsArray.put(obj)
                         }
                     }
