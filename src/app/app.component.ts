@@ -66,6 +66,7 @@ export class AppComponent implements OnInit {
   sleepSessions: any[] = [];
   workouts: any[] = [];
   isSyncing = false;
+  expandedLogIndex: number | null = null;
 
   // Firebase Integration State
   isLoggedIn = true;
@@ -513,6 +514,10 @@ export class AppComponent implements OnInit {
         await this.saveUserDataToFirebase();
       }
     }
+  }
+
+  toggleLogExpansion(index: number): void {
+    this.expandedLogIndex = this.expandedLogIndex === index ? null : index;
   }
 
   // File Upload Handling

@@ -576,29 +576,53 @@
         </button>
       </div>
       <div style="display: flex; flex-direction: column; gap: 12px;">
-        <div *ngFor="let log of foodLogs; let i = index" style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--radius-expressive-md); padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-          <div style="flex: 1; min-width: 0;">
-            <div style="font-weight: 700; font-size: 0.95rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ log.mealName }}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-              {{ log.description }}
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 16px; flex-shrink: 0;">
-            <div style="text-align: right;">
-              <div style="font-weight: 800; font-size: 1.05rem;" class="text-calories">{{ log.calories }} kcal</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
-                P:{{ log.protein }}g | C:{{ log.carbs }}g | F:{{ log.fat }}g
+        <div *ngFor="let log of foodLogs; let i = index" 
+             style="background-color: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: var(--radius-expressive-md); display: flex; flex-direction: column; transition: var(--transition-bounce); overflow: hidden;">
+          
+          <!-- Collapsed Header Row -->
+          <div style="padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer;" (click)="toggleLogExpansion(i)">
+            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;">
+              <!-- Little category dot -->
+              <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary); box-shadow: 0 0 6px var(--color-primary); flex-shrink: 0;"></span>
+              <div [style.white-space]="expandedLogIndex === i ? 'normal' : 'nowrap'" style="font-weight: 700; font-size: 0.95rem; text-overflow: ellipsis; overflow: hidden; line-height: 1.35; color: var(--text-primary);">
+                {{ log.mealName }}
               </div>
             </div>
             
-            <button (click)="deleteFoodLog(i)" style="background: none; border: none; color: hsl(352, 85%, 60%); padding: 8px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth);" 
-                    onmouseover="this.style.backgroundColor='rgba(255, 75, 75, 0.1)'" 
-                    onmouseout="this.style.backgroundColor='transparent'">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+              <span class="text-calories" style="font-weight: 800; font-size: 1rem;">{{ log.calories }} kcal</span>
+              <!-- Chevron Indicator -->
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" [style.transform]="expandedLogIndex === i ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: var(--transition-smooth); color: var(--text-muted);">
+                <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
-            </button>
+            </div>
+          </div>
+
+          <!-- Expanded Accordion Detail Block -->
+          <div *ngIf="expandedLogIndex === i" class="animate-fade-up" style="padding: 0 18px 16px; border-top: 1px solid rgba(255, 255, 255, 0.03); background-color: rgba(255, 255, 255, 0.01); display: flex; flex-direction: column; gap: 10px;">
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-top: 10px;">
+              {{ log.description || 'No description available for this entry.' }}
+            </p>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; flex-wrap: wrap;">
+              <!-- Macro pills -->
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <span style="font-size: 0.7rem; background-color: rgba(213, 0, 249, 0.08); color: var(--color-protein); padding: 3px 8px; border-radius: var(--radius-pill); border: 1px solid rgba(213, 0, 249, 0.15); font-weight: 700;">P: {{ log.protein }}g</span>
+                <span style="font-size: 0.7rem; background-color: rgba(255, 214, 0, 0.08); color: var(--color-carbs); padding: 3px 8px; border-radius: var(--radius-pill); border: 1px solid rgba(255, 214, 0, 0.15); font-weight: 700;">C: {{ log.carbs }}g</span>
+                <span style="font-size: 0.7rem; background-color: rgba(255, 23, 68, 0.08); color: var(--color-fat); padding: 3px 8px; border-radius: var(--radius-pill); border: 1px solid rgba(255, 23, 68, 0.15); font-weight: 700;">F: {{ log.fat }}g</span>
+              </div>
+
+              <!-- Delete Entry button -->
+              <button (click)="deleteFoodLog(i)" style="background: none; border: none; color: #ff1744; padding: 6px 12px; cursor: pointer; border-radius: var(--radius-expressive-md); display: flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 700; transition: var(--transition-smooth); background-color: rgba(255, 23, 68, 0.05);"
+                      onmouseover="this.style.backgroundColor='rgba(255, 23, 68, 0.15)'" 
+                      onmouseout="this.style.backgroundColor='rgba(255, 23, 68, 0.05)'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete Log
+              </button>
+            </div>
           </div>
         </div>
       </div>
