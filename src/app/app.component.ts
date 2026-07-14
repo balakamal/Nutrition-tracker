@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
   isSyncing = false;
 
   // Firebase Integration State
-  isLoggedIn = false;
+  isLoggedIn = true;
   firebaseEmail = '';
   firebasePassword = '';
   isLoginMode = true;
@@ -214,30 +214,27 @@ export class AppComponent implements OnInit {
   }
 
   async saveApiKey(): Promise<void> {
-    if (this.apiKeyInput.trim().length > 10) {
-      await this.geminiService.saveApiKey(this.apiKeyInput);
-      this.hasApiKey = true;
-      this.showSettings = false;
-      this.analysisError = null;
+    const key = this.apiKeyInput.trim();
+    if (!key || !key.startsWith('AIzaSy') || key.length < 30) {
+      alert('Please enter a valid Gemini API Key starting with AIzaSy.');
+      return;
     }
+    await this.geminiService.saveApiKey(key);
+    this.hasApiKey = true;
+    this.showSettings = false;
+    this.analysisError = null;
   }
 
   async saveSettingsConfig(): Promise<void> {
-    // Save API key if modified
-    if (this.apiKeyInput.trim() && !this.apiKeyInput.includes('••••')) {
-      await this.geminiService.saveApiKey(this.apiKeyInput);
-      this.hasApiKey = true;
+    const key = this.apiKeyInput.trim();
+    if (!key || (!key.includes('••••') && (!key.startsWith('AIzaSy') || key.length < 30))) {
+      alert('Please enter a valid Gemini API Key starting with AIzaSy.');
+      return;
     }
-    // Save Firebase configuration JSON if modified
-    if (this.firebaseConfigJson.trim()) {
-      try {
-        const parsed = JSON.parse(this.firebaseConfigJson);
-        if (parsed.apiKey && parsed.projectId) {
-          await this.firebaseService.saveFirebaseConfig(parsed);
-        }
-      } catch (e) {
-        console.error('Invalid Firebase Config JSON format.');
-      }
+    // Save API key if modified
+    if (!key.includes('••••')) {
+      await this.geminiService.saveApiKey(key);
+      this.hasApiKey = true;
     }
     // Save profile and sync mode
     await this.saveUserProfile();
