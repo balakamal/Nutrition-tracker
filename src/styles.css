@@ -27,6 +27,7 @@
   --glass-border-hover: rgba(255, 255, 255, 0.18);
   --glass-glow: rgba(0, 176, 255, 0.03);
   --advisor-bg: linear-gradient(135deg, rgba(20, 22, 33, 0.95) 0%, rgba(0, 176, 255, 0.05) 100%);
+  --trend-bg: linear-gradient(135deg, rgba(20, 22, 33, 0.95) 0%, rgba(213, 0, 249, 0.05) 100%);
   --input-bg: rgba(5, 6, 10, 0.6);   /* Recessed, dark background for inputs */
   --row-bg: rgba(255, 255, 255, 0.03); /* Elevated log row background */
 
@@ -61,6 +62,7 @@
   --glass-border-hover: rgba(255, 255, 255, 0.18);
   --glass-glow: rgba(0, 176, 255, 0.03);
   --advisor-bg: linear-gradient(135deg, rgba(20, 22, 33, 0.95) 0%, rgba(0, 176, 255, 0.05) 100%);
+  --trend-bg: linear-gradient(135deg, rgba(20, 22, 33, 0.95) 0%, rgba(213, 0, 249, 0.05) 100%);
   --input-bg: rgba(5, 6, 10, 0.6);
   --row-bg: rgba(255, 255, 255, 0.03);
 
@@ -98,6 +100,7 @@
   --glass-border-hover: rgba(0, 0, 0, 0.14);
   --glass-glow: rgba(0, 176, 255, 0.01);
   --advisor-bg: linear-gradient(135deg, #ffffff 0%, rgba(0, 176, 255, 0.03) 100%);
+  --trend-bg: linear-gradient(135deg, #ffffff 0%, rgba(213, 0, 249, 0.03) 100%);
   --input-bg: #ebedf2;
   --row-bg: #f4f6fa;
 

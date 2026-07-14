@@ -766,13 +766,13 @@
         </div>
 
         <!-- AI Historical Trends & Recommendations Card -->
-        <div class="glass-card" style="margin-top: 0; border-color: rgba(213, 0, 249, 0.15); background: linear-gradient(135deg, rgba(20, 22, 33, 0.95) 0%, rgba(213, 0, 249, 0.05) 100%);">
+        <div class="glass-card" style="margin-top: 0; border-color: rgba(213, 0, 249, 0.15); background: var(--trend-bg);">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
             <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--color-protein); letter-spacing: 0.1em;">AI Historical Analytics</span>
           </div>
 
           <div *ngIf="!historicalAnalyticsText" style="text-align: center; padding: 10px 0;">
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Analyze all your past food logs and profile parameters for weekly/monthly trend reviews, macro distribution critiques, and custom meal ideas.</p>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.45;">Analyze all your past food logs and profile parameters for weekly/monthly trend reviews, macro distribution critiques, and custom meal ideas.</p>
             <button class="btn-primary" (click)="triggerHistoricalAnalytics()" [disabled]="isGeneratingHistoricalAnalytics" style="font-size: 0.75rem; padding: 10px 20px; width: 100%; background: linear-gradient(135deg, var(--color-protein) 0%, #aa00ff 100%); box-shadow: 0 8px 24px -6px rgba(213, 0, 249, 0.35);">
               <span *ngIf="!isGeneratingHistoricalAnalytics">Analyze Historical Trends</span>
               <span *ngIf="isGeneratingHistoricalAnalytics">Compiling logs & trends...</span>
