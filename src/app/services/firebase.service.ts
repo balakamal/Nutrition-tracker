@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { initializeApp, getApp, getApps } from 'firebase/app';
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  User 
+  User
 } from 'firebase/auth';
-import { 
-  getFirestore, 
-  doc, 
-  setDoc, 
-  getDoc 
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
 } from 'firebase/firestore';
 
 export interface FirebaseConfig {
@@ -25,12 +25,21 @@ export interface FirebaseConfig {
   storageBucket: string;
   messagingSenderId: string;
   appId: string;
+  measurementId: string;
 }
 
 // BUNDLED DEFAULT CONFIGURATION (OPTIONAL)
 // Paste your own project's Firebase Web Config object here once to build it directly into the app!
 // Example: export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig | null = { apiKey: "...", ... };
-export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig | null = null;
+export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig | null = {
+  apiKey: "AIzaSyAjVDJZvWdo_ZttZt4ZEedOJJnvlpt3E9g",
+  authDomain: "vital-3e770.firebaseapp.com",
+  projectId: "vital-3e770",
+  storageBucket: "vital-3e770.firebasestorage.app",
+  messagingSenderId: "399325901526",
+  appId: "1:399325901526:web:5128738b9f321de106cf77",
+  measurementId: "G-5FF0DYHF9N"
+};
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +49,7 @@ export class FirebaseService {
   private currentFirebaseConfig: FirebaseConfig | null = null;
   private auth: any = null;
   private db: any = null;
-  
+
   // Active User State
   public currentUserEmail: string | null = null;
   public currentUserId: string | null = null;
@@ -104,11 +113,11 @@ export class FirebaseService {
   async initFirebase(): Promise<void> {
     try {
       const savedConfig = await this.loadFirebaseConfig();
-      
+
       if (savedConfig && savedConfig.apiKey && !savedConfig.apiKey.includes('MockConfig')) {
         this.currentFirebaseConfig = savedConfig;
         this.isMockMode = false;
-        
+
         // Initialize or retrieve initialized app
         let app;
         if (getApps().length === 0) {
@@ -116,11 +125,11 @@ export class FirebaseService {
         } else {
           app = getApp();
         }
-        
+
         this.auth = getAuth(app);
         this.db = getFirestore(app);
         this.isFirebaseInitialized = true;
-        
+
         onAuthStateChanged(this.auth, (user) => {
           if (user) {
             this.currentUserEmail = user.email;
@@ -133,19 +142,19 @@ export class FirebaseService {
             this.onAuthStateChangedListener(user ? { email: user.email, uid: user.uid } : null);
           }
         });
-        
+
         console.log('Firebase initialized successfully in REAL cloud mode.');
       } else {
         // Fall back to Mock mode for instant running/testing
         this.isMockMode = true;
         this.isFirebaseInitialized = true;
-        
+
         const { value: loggedInUser } = await Preferences.get({ key: 'mock_current_user' });
         if (loggedInUser) {
           this.currentUserEmail = loggedInUser;
           this.currentUserId = `mock_uid_${loggedInUser.replace(/[^a-zA-Z0-9]/g, '')}`;
         }
-        
+
         console.log('Firebase initialized in MOCK offline database mode.');
       }
     } catch (error) {
@@ -160,7 +169,7 @@ export class FirebaseService {
       // Handle mock login
       const { value: usersStr } = await Preferences.get({ key: 'mock_auth_users' });
       const users = usersStr ? JSON.parse(usersStr) : {};
-      
+
       if (users[email] && users[email] === password) {
         this.currentUserEmail = email;
         this.currentUserId = `mock_uid_${email.replace(/[^a-zA-Z0-9]/g, '')}`;
@@ -203,14 +212,14 @@ export class FirebaseService {
       // Handle mock signup
       const { value: usersStr } = await Preferences.get({ key: 'mock_auth_users' });
       const users = usersStr ? JSON.parse(usersStr) : {};
-      
+
       if (users[email]) {
         throw new Error('User already exists (Mock Mode).');
       }
-      
+
       users[email] = password;
       await Preferences.set({ key: 'mock_auth_users', value: JSON.stringify(users) });
-      
+
       this.currentUserEmail = email;
       this.currentUserId = `mock_uid_${email.replace(/[^a-zA-Z0-9]/g, '')}`;
       await Preferences.set({ key: 'mock_current_user', value: email });
@@ -245,9 +254,9 @@ export class FirebaseService {
     if (!this.currentUserId) return;
 
     if (this.isMockMode) {
-      await Preferences.set({ 
-        key: `mock_userdata_${this.currentUserId}`, 
-        value: JSON.stringify(data) 
+      await Preferences.set({
+        key: `mock_userdata_${this.currentUserId}`,
+        value: JSON.stringify(data)
       });
     } else {
       const docRef = doc(this.db, 'users', this.currentUserId);
