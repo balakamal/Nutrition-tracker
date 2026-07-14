@@ -330,7 +330,7 @@
     </div>
 
     <!-- Aether Advisor Daily AI Summary Card -->
-    <div class="glass-card" style="margin-top: 10px; border-color: rgba(0, 176, 255, 0.15); background: linear-gradient(135deg, rgba(15, 16, 23, 0.9) 0%, rgba(0, 176, 255, 0.03) 100%);">
+    <div class="glass-card" style="margin-top: 10px; border-color: rgba(0, 176, 255, 0.15); background: var(--advisor-bg);">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--color-primary); letter-spacing: 0.1em;">Aether AI Advisor</span>
       </div>
@@ -613,8 +613,13 @@
             <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;">
               <!-- Little category dot -->
               <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary); box-shadow: 0 0 6px var(--color-primary); flex-shrink: 0;"></span>
-              <div [style.white-space]="expandedLogIndex === i ? 'normal' : 'nowrap'" style="font-weight: 700; font-size: 0.95rem; text-overflow: ellipsis; overflow: hidden; line-height: 1.35; color: var(--text-primary);">
-                {{ log.mealName }}
+              <div style="flex: 1; min-width: 0;">
+                <div [style.white-space]="expandedLogIndex === i ? 'normal' : 'nowrap'" style="font-weight: 700; font-size: 0.95rem; text-overflow: ellipsis; overflow: hidden; line-height: 1.35; color: var(--text-primary);">
+                  {{ log.mealName }}
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; font-weight: 600; letter-spacing: 0.02em;">
+                  P: {{ log.protein }}g  •  C: {{ log.carbs }}g  •  F: {{ log.fat }}g
+                </div>
               </div>
             </div>
             
