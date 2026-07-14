@@ -4,114 +4,112 @@
 :root {
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* Symmetrical Clean Radii */
-  --radius-expressive-lg: 24px;
-  --radius-expressive-md: 16px;
+  /* Symmetrical Modern Radii */
+  --radius-expressive-lg: 20px;
+  --radius-expressive-md: 14px;
   --radius-pill: 9999px;
   
   /* Standard Shadows & Transitions */
-  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
-  --shadow-glow-calories: 0 0 24px hsla(162, 72%, 46%, 0.15);
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 24px rgba(0, 230, 204, 0.06);
+  --transition-smooth: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-bounce: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* DEFAULT / DARK THEME TOKENS (Pantone Shadow / Hematite base) */
-  --bg-primary: hsl(240, 17%, 8%);            /* Deep Hematite */
-  --bg-secondary: hsl(240, 17%, 12%);          /* Hematite */
-  --bg-tertiary: hsl(218, 23%, 18%);           /* Baltic Sea */
-  --bg-surface: hsl(240, 17%, 9%);             /* Hematite surface */
+  /* DEFAULT / DARK THEME TOKENS (Obsidian / Neon Accent base) */
+  --bg-primary: #07080c;              /* Deep Obsidian Black */
+  --bg-secondary: #0f1017;            /* Elevated Black */
+  --bg-tertiary: #161822;             /* Sleek Charcoal */
+  --bg-surface: #07080c;              
   
-  --glass-bg: hsla(218, 23%, 14%, 0.7);        /* Baltic Sea glass */
-  --glass-border: hsla(90, 10%, 98%, 0.08);    /* Cloud Dancer border */
-  --glass-border-hover: hsla(90, 10%, 98%, 0.18);
-  --glass-glow: hsla(270, 95%, 85%, 0.02);     /* Quiet Violet glow */
+  --glass-bg: rgba(15, 16, 23, 0.8);  
+  --glass-border: rgba(255, 255, 255, 0.04);
+  --glass-border-hover: rgba(255, 255, 255, 0.12);
+  --glass-glow: rgba(0, 176, 255, 0.02);
 
-  --text-primary: hsl(90, 10%, 98%);           /* Cloud Dancer */
-  --text-secondary: hsl(215, 20%, 78%);        /* Cloud Cover */
-  --text-muted: hsl(215, 10%, 56%);
+  --text-primary: #f3f4f7;            /* Crisp Platinum */
+  --text-secondary: #9aa0b0;          /* Sleek Silver */
+  --text-muted: #5e6473;              
+  
+  --btn-secondary-hover: #1f2230;
+  --dialog-overlay: rgba(4, 5, 8, 0.92);
 
-  --btn-secondary-hover: hsl(218, 23%, 22%);
-  --dialog-overlay: rgba(13, 13, 18, 0.85);
+  /* Premium Neon Palette */
+  --color-primary: #00b0ff;           /* Neon Electric Cyan */
+  --color-primary-hover: #40c4ff;
 
-  /* Primary Blue Fusion Color */
-  --color-primary: hsl(207, 45%, 48%);         /* Blue Fusion */
-  --color-primary-hover: hsl(207, 50%, 55%);
-
-  /* Pantone Accent Palette */
-  --color-calories: hsl(150, 65%, 55%);        /* Veiled Vista (Sage) */
-  --color-protein: hsl(270, 90%, 80%);         /* Quiet Violet (Lavender) */
-  --color-carbs: hsl(43, 95%, 55%);            /* Golden Mist (Gold) */
-  --color-fat: hsl(122, 50%, 58%);             /* Green shade for Fat */
-  --color-steps: hsl(180, 62%, 55%);           /* Blue Fusion (Teal) */
-  --color-sleep: hsl(258, 80%, 78%);           /* Slate Indigo */
-  --color-workout: hsl(25, 92%, 58%);          /* Sunset Ochre */
+  --color-calories: #00e676;          /* Neon Green */
+  --color-protein: #d500f9;           /* Neon Pink/Violet */
+  --color-carbs: #ffd600;             /* Neon Gold */
+  --color-fat: #ff1744;               /* Neon Crimson */
+  --color-steps: #00e5ff;             /* Neon Sky */
+  --color-sleep: #7c4dff;             /* Neon Indigo */
+  --color-workout: #ff6d00;           /* Neon Orange */
 }
 
-/* Explicit Dark Theme (identical to root defaults) */
+/* Explicit Dark Theme */
 [data-theme="dark"] {
-  --bg-primary: hsl(240, 17%, 8%);
-  --bg-secondary: hsl(240, 17%, 12%);
-  --bg-tertiary: hsl(218, 23%, 18%);
-  --bg-surface: hsl(240, 17%, 9%);
+  --bg-primary: #07080c;
+  --bg-secondary: #0f1017;
+  --bg-tertiary: #161822;
+  --bg-surface: #07080c;
   
-  --glass-bg: hsla(218, 23%, 14%, 0.7);
-  --glass-border: hsla(90, 10%, 98%, 0.08);
-  --glass-border-hover: hsla(90, 10%, 98%, 0.18);
-  --glass-glow: hsla(270, 95%, 85%, 0.02);
+  --glass-bg: rgba(15, 16, 23, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.04);
+  --glass-border-hover: rgba(255, 255, 255, 0.12);
+  --glass-glow: rgba(0, 176, 255, 0.02);
 
-  --text-primary: hsl(90, 10%, 98%);
-  --text-secondary: hsl(215, 20%, 78%);
-  --text-muted: hsl(215, 10%, 56%);
+  --text-primary: #f3f4f7;
+  --text-secondary: #9aa0b0;
+  --text-muted: #5e6473;
   
-  --btn-secondary-hover: hsl(218, 23%, 22%);
-  --dialog-overlay: rgba(13, 13, 18, 0.85);
+  --btn-secondary-hover: #1f2230;
+  --dialog-overlay: rgba(4, 5, 8, 0.92);
 
-  --color-primary: hsl(207, 45%, 48%);
-  --color-primary-hover: hsl(207, 50%, 55%);
+  --color-primary: #00b0ff;
+  --color-primary-hover: #40c4ff;
 
-  --color-calories: hsl(150, 65%, 55%);
-  --color-protein: hsl(270, 90%, 80%);
-  --color-carbs: hsl(43, 95%, 55%);
-  --color-fat: hsl(122, 50%, 58%);
-  --color-steps: hsl(180, 62%, 55%);
-  --color-sleep: hsl(258, 80%, 78%);
-  --color-workout: hsl(25, 92%, 58%);
+  --color-calories: #00e676;
+  --color-protein: #d500f9;
+  --color-carbs: #ffd600;
+  --color-fat: #ff1744;
+  --color-steps: #00e5ff;
+  --color-sleep: #7c4dff;
+  --color-workout: #ff6d00;
   
-  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.4);
+  --shadow-premium: 0 16px 40px -10px rgba(0, 0, 0, 0.55);
 }
 
-/* Explicit Light Theme (Pantone Light / Cloud Dancer & Cover base) */
+/* Explicit Light Theme */
 [data-theme="light"] {
-  --bg-primary: hsl(90, 10%, 94%);             /* Cloud Dancer primary */
-  --bg-secondary: hsl(90, 8%, 89%);            /* Cloud Dancer secondary */
-  --bg-tertiary: hsl(215, 20%, 85%);           /* Cloud Cover tertiary */
-  --bg-surface: hsl(90, 10%, 98%);             /* Cloud Dancer container background */
+  --bg-primary: #f4f6fa;              /* Clean Platinum Gray */
+  --bg-secondary: #ebedf2;            
+  --bg-tertiary: #e0e3eb;             
+  --bg-surface: #f4f6fa;             
   
-  --glass-bg: hsl(0, 0%, 100%);               /* Cards: Pure crisp white */
-  --glass-border: hsla(240, 17%, 11%, 0.06);   /* Hematite fine borders */
-  --glass-border-hover: hsla(240, 17%, 11%, 0.14);
-  --glass-glow: hsla(90, 10%, 98%, 0.6);
+  --glass-bg: #ffffff;                /* Pure clean cards */
+  --glass-border: rgba(0, 0, 0, 0.04);
+  --glass-border-hover: rgba(0, 0, 0, 0.12);
+  --glass-glow: rgba(0, 176, 255, 0.01);
 
-  --text-primary: hsl(240, 20%, 12%);          /* Hematite text */
-  --text-secondary: hsl(218, 23%, 32%);        /* Baltic Sea text */
-  --text-muted: hsl(218, 12%, 52%);
-
-  --btn-secondary-hover: hsl(215, 20%, 80%);
-  --dialog-overlay: rgba(200, 205, 215, 0.6);
-
-  --color-primary: hsl(207, 35%, 40%);         /* Blue Fusion for light bg */
-  --color-primary-hover: hsl(207, 40%, 46%);
-
-  /* Polished high-contrast Pantone accents for Light Mode */
-  --color-calories: hsl(150, 75%, 28%);        /* Deep Veiled Vista (Sage) */
-  --color-protein: hsl(262, 75%, 52%);         /* Quiet Violet (Lavender) */
-  --color-carbs: hsl(38, 90%, 42%);            /* Deep Golden Mist (Gold) */
-  --color-fat: hsl(122, 55%, 35%);             /* Green shade for Fat in light mode */
-  --color-steps: hsl(175, 75%, 34%);           /* Ocean Fusion */
-  --color-sleep: hsl(255, 65%, 50%);           /* Slate Indigo */
-  --color-workout: hsl(20, 85%, 45%);          /* Sunset Ochre */
+  --text-primary: #0e111a;            /* Dark Charcoal text */
+  --text-secondary: #4a5060;          
+  --text-muted: #828a9b;
   
-  --shadow-premium: 0 10px 30px -8px rgba(39, 47, 63, 0.06), 0 4px 12px -4px rgba(39, 47, 63, 0.03);
+  --btn-secondary-hover: #d2d6e3;
+  --dialog-overlay: rgba(210, 215, 225, 0.6);
+
+  --color-primary: #008cd1;           /* Adjusted primary for light bg contrast */
+  --color-primary-hover: #00a4f5;
+
+  --color-calories: #00b359;
+  --color-protein: #b300d0;
+  --color-carbs: #e6b800;
+  --color-fat: #e60032;
+  --color-steps: #00bcd4;
+  --color-sleep: #6200ea;
+  --color-workout: #e65100;
+  
+  --shadow-premium: 0 16px 36px -12px rgba(8, 15, 30, 0.06), 0 4px 12px -5px rgba(8, 15, 30, 0.02);
 }
 
 /* Global Reset & Base Styles */
@@ -127,51 +125,51 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Typography Scale */
 h1 {
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
 }
 
 h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 h3 {
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 /* Premium Layout Components */
 .app-container {
-  max-width: 480px; /* Styled like a high-end mobile viewport */
+  max-width: 460px; /* High-end mobile viewport */
   margin: 0 auto;
   min-height: 100vh;
   background-color: var(--bg-surface);
   position: relative;
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.4);
-  padding: 24px 16px 100px;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.7);
+  padding: 24px 20px 80px;
 }
 
-/* Glassmorphism Cards with Organic Shapes */
+/* Glassmorphism Cards */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-expressive-lg);
   padding: 24px;
@@ -182,33 +180,25 @@ p {
   transition: var(--transition-bounce);
 }
 
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 40%;
-  background: linear-gradient(to bottom, var(--glass-glow), transparent);
-  pointer-events: none;
-}
-
 .glass-card:hover {
-  transform: translateY(-4px) scale(1.01);
+  transform: translateY(-2px);
   border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-premium), var(--shadow-glow);
 }
 
 /* Button & Control styling */
 .btn-primary {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0091ea 100%);
   color: #ffffff;
   border: none;
   font-weight: 700;
-  padding: 14px 28px;
-  font-size: 1rem;
-  border-radius: var(--radius-pill);
+  padding: 15px 28px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: var(--radius-expressive-md);
   cursor: pointer;
-  box-shadow: 0 8px 24px -6px hsla(207, 45%, 40%, 0.3);
+  box-shadow: 0 8px 24px -6px rgba(0, 176, 255, 0.35);
   transition: var(--transition-smooth);
   display: inline-flex;
   align-items: center;
@@ -219,8 +209,8 @@ p {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px hsla(207, 45%, 40%, 0.45);
-  background: var(--color-primary-hover);
+  box-shadow: 0 12px 32px -4px rgba(0, 176, 255, 0.5);
+  filter: brightness(1.1);
 }
 
 .btn-primary:active {
@@ -228,13 +218,13 @@ p {
 }
 
 .btn-secondary {
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--glass-border);
   font-weight: 600;
   padding: 12px 24px;
-  font-size: 0.95rem;
-  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  border-radius: var(--radius-expressive-md);
   cursor: pointer;
   transition: var(--transition-smooth);
   display: inline-flex;
@@ -258,20 +248,20 @@ p {
 }
 
 .input-group label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding-left: 4px;
+  letter-spacing: 0.08em;
+  padding-left: 2px;
 }
 
 .form-input {
-  background-color: var(--bg-tertiary);
+  background-color: var(--bg-secondary);
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
-  padding: 16px 20px;
-  font-size: 1rem;
+  padding: 14px 18px;
+  font-size: 0.95rem;
   border-radius: var(--radius-expressive-md);
   outline: none;
   font-family: var(--font-family);
@@ -279,24 +269,17 @@ p {
 }
 
 .form-input:focus {
-  border-color: var(--color-calories);
-  box-shadow: 0 0 0 3px hsla(145, 75%, 48%, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 176, 255, 0.15);
 }
 
 /* Micro-animations */
-@keyframes pulseGlow {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
-}
-
-@keyframes dashRotate {
-  0% { stroke-dashoffset: 280; }
-  100% { stroke-dashoffset: 0; }
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes slideInUp {
-  from { transform: translateY(40px); opacity: 0; }
+  from { transform: translateY(24px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -310,7 +293,7 @@ p {
 .text-workout { color: var(--color-workout); }
 
 .animate-fade-up {
-  animation: slideInUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Theme Toggle Button Styling */
@@ -318,8 +301,8 @@ p {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -330,16 +313,16 @@ p {
 
 .btn-theme-toggle:hover {
   color: var(--text-primary);
-  background-color: var(--bg-tertiary);
+  background-color: var(--bg-secondary);
 }
 
 .btn-theme-toggle.active {
-  color: var(--bg-surface) !important;
+  color: var(--bg-secondary) !important;
   background-color: var(--text-primary) !important;
 }
 
 /* Clear logs hover transition */
 .btn-clear-logs:hover {
-  background-color: hsla(350, 89%, 60%, 0.1) !important;
+  background-color: rgba(255, 23, 68, 0.1) !important;
   color: var(--color-fat) !important;
 }

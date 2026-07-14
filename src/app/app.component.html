@@ -2,10 +2,12 @@
   <!-- Main Dashboard -->
   <div>
   <!-- Header Bar -->
-  <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-top: 10px;">
+  <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-top: 8px;">
     <div>
-      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); font-weight: 700;">Aesthetic Dashboard</span>
-      <h1 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VITALITY</h1>
+      <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); font-weight: 800; display: block; margin-bottom: 2px;">Aether Engine</span>
+      <h1 style="font-size: 2rem; font-weight: 900; letter-spacing: -0.04em; display: flex; align-items: center; gap: 2px; margin: 0;">
+        <span style="color: var(--color-primary);">VI</span><span style="color: var(--text-primary);">TAL</span>
+      </h1>
     </div>
     
     <div style="display: flex; gap: 8px; align-items: center;">
@@ -22,8 +24,8 @@
         </button>
       </div>
 
-      <button class="btn-secondary" style="padding: 10px 14px; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;" (click)="showSettings = !showSettings" title="Settings">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button class="btn-secondary" style="padding: 10px; border-radius: var(--radius-expressive-md); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-color: var(--glass-border);" (click)="showSettings = !showSettings" title="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
@@ -261,30 +263,30 @@
   <div *ngIf="hasApiKey" class="animate-fade-up">
     
     <!-- Premium Progress Rings Block -->
-    <div class="glass-card" style="text-align: center; border-radius: var(--radius-expressive-lg); margin-top: 10px;">
-      <h2 style="font-weight: 800; font-size: 1.3rem; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Energy Intake</h2>
+    <div class="glass-card" style="text-align: center; margin-top: 10px;">
+      <h2 style="font-weight: 800; font-size: 1rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);">Energy Allocation</h2>
       
       <!-- Circular SVG Progress Meter -->
-      <div style="position: relative; width: 200px; height: 200px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
-        <svg width="200" height="200" viewBox="0 0 100 100" style="transform: rotate(-90deg); filter: drop-shadow(0 0 8px rgba(0,0,0,0.3));">
+      <div style="position: relative; width: 180px; height: 180px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+        <svg width="180" height="180" viewBox="0 0 100 100" style="transform: rotate(-90deg);">
           <!-- Background track -->
-          <circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--bg-tertiary)" stroke-width="6"></circle>
+          <circle cx="50" cy="50" r="44" fill="transparent" stroke="var(--bg-secondary)" stroke-width="4.5"></circle>
           <!-- Main calorie ring -->
-          <circle cx="50" cy="50" r="42" fill="transparent" 
+          <circle cx="50" cy="50" r="44" fill="transparent" 
                   stroke="var(--color-primary)" 
-                  stroke-width="7" 
+                  stroke-width="5.5" 
                   stroke-linecap="round"
-                  [attr.stroke-dasharray]="263.89" 
-                  [attr.stroke-dashoffset]="263.89 - (263.89 * getCaloriePercentage() / 100)"
-                  style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 0 4px var(--color-primary));">
+                  [attr.stroke-dasharray]="276.46" 
+                  [attr.stroke-dashoffset]="276.46 - (276.46 * getCaloriePercentage() / 100)"
+                  style="transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); filter: drop-shadow(0 0 4px var(--color-primary));">
           </circle>
         </svg>
         
         <!-- Text inside Ring -->
         <div style="position: absolute; text-align: center;">
           <span style="font-size: 2.2rem; font-weight: 900; line-height: 1; letter-spacing: -0.04em;">{{ consumedCalories }}</span>
-          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-top: 4px;">of {{ targetCalories }} kcal</div>
-          <div style="display: inline-block; font-size: 0.85rem; font-weight: 700; background-color: hsla(207, 45%, 48%, 0.15); color: var(--color-primary); padding: 2px 8px; border-radius: 12px; margin-top: 8px;">
+          <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-top: 4px; font-weight: 700;">of {{ targetCalories }} kcal</div>
+          <div style="display: inline-block; font-size: 0.75rem; font-weight: 800; background-color: rgba(0, 176, 255, 0.1); color: var(--color-primary); padding: 3px 10px; border-radius: var(--radius-pill); margin-top: 8px; border: 1px solid rgba(0, 176, 255, 0.2);">
             {{ getCaloriePercentage() }}%
           </div>
         </div>
@@ -293,34 +295,34 @@
       <!-- Macro Details (Grid Layout) -->
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
         <!-- Protein -->
-        <div style="background-color: var(--bg-tertiary); border-radius: var(--radius-expressive-md); padding: 12px; text-align: center;">
-          <span class="text-protein" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Protein</span>
-          <div style="font-size: 1.15rem; font-weight: 800; margin: 4px 0;">{{ consumedProtein }}g</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Goal: {{ targetProtein }}g</div>
+        <div style="background-color: var(--bg-secondary); border-radius: var(--radius-expressive-md); padding: 14px 10px; text-align: center; border: 1px solid var(--glass-border);">
+          <span class="text-protein" style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Protein</span>
+          <div style="font-size: 1.1rem; font-weight: 800;">{{ consumedProtein }}g</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">/ {{ targetProtein }}g</div>
           <!-- Tiny bar -->
-          <div style="height: 4px; background-color: var(--bg-primary); border-radius: 2px; margin-top: 8px; overflow: hidden;">
+          <div style="height: 3px; background-color: var(--bg-primary); border-radius: 2px; margin-top: 10px; overflow: hidden;">
             <div [style.width.%]="getProteinPercentage()" style="height: 100%; background-color: var(--color-protein); transition: var(--transition-smooth);"></div>
           </div>
         </div>
 
         <!-- Carbs -->
-        <div style="background-color: var(--bg-tertiary); border-radius: var(--radius-expressive-md); padding: 12px; text-align: center;">
-          <span class="text-carbs" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Carbs</span>
-          <div style="font-size: 1.15rem; font-weight: 800; margin: 4px 0;">{{ consumedCarbs }}g</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Goal: {{ targetCarbs }}g</div>
+        <div style="background-color: var(--bg-secondary); border-radius: var(--radius-expressive-md); padding: 14px 10px; text-align: center; border: 1px solid var(--glass-border);">
+          <span class="text-carbs" style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Carbs</span>
+          <div style="font-size: 1.1rem; font-weight: 800;">{{ consumedCarbs }}g</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">/ {{ targetCarbs }}g</div>
           <!-- Tiny bar -->
-          <div style="height: 4px; background-color: var(--bg-primary); border-radius: 2px; margin-top: 8px; overflow: hidden;">
+          <div style="height: 3px; background-color: var(--bg-primary); border-radius: 2px; margin-top: 10px; overflow: hidden;">
             <div [style.width.%]="getCarbsPercentage()" style="height: 100%; background-color: var(--color-carbs); transition: var(--transition-smooth);"></div>
           </div>
         </div>
 
         <!-- Fat -->
-        <div style="background-color: var(--bg-tertiary); border-radius: var(--radius-expressive-md); padding: 12px; text-align: center;">
-          <span class="text-fat" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Fat</span>
-          <div style="font-size: 1.15rem; font-weight: 800; margin: 4px 0;">{{ consumedFat }}g</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Goal: {{ targetFat }}g</div>
+        <div style="background-color: var(--bg-secondary); border-radius: var(--radius-expressive-md); padding: 14px 10px; text-align: center; border: 1px solid var(--glass-border);">
+          <span class="text-fat" style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px;">Fat</span>
+          <div style="font-size: 1.15rem; font-weight: 800;">{{ consumedFat }}g</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">/ {{ targetFat }}g</div>
           <!-- Tiny bar -->
-          <div style="height: 4px; background-color: var(--bg-primary); border-radius: 2px; margin-top: 8px; overflow: hidden;">
+          <div style="height: 3px; background-color: var(--bg-primary); border-radius: 2px; margin-top: 10px; overflow: hidden;">
             <div [style.width.%]="getFatPercentage()" style="height: 100%; background-color: var(--color-fat); transition: var(--transition-smooth);"></div>
           </div>
         </div>
@@ -461,135 +463,103 @@
       </div>
     </div>
 
-    <!-- Health Connect Integration Card -->
+    <!-- Consolidated Biometrics Sync Card -->
     <div class="glass-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="background-color: hsla(45, 95%, 50%, 0.15); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-steps)" stroke-width="2">
-              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-              <line x1="6" y1="1" x2="6" y2="4"></line>
-              <line x1="10" y1="1" x2="10" y2="4"></line>
-              <line x1="14" y1="1" x2="14" y2="4"></line>
-            </svg>
-          </div>
-          <div>
-            <h2 style="font-size: 1.25rem;">Health Connect</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">Google Health Sync status</p>
-          </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.1em;">Biometrics Sync</span>
         </div>
         
         <!-- Status indicator pill -->
-        <span *ngIf="healthConnectStatus === 'Available'" style="font-size: 0.75rem; font-weight: 700; background-color: hsla(145, 75%, 48%, 0.15); color: var(--color-calories); padding: 4px 10px; border-radius: 12px;">
+        <span *ngIf="healthConnectStatus === 'Available'" style="font-size: 0.65rem; font-weight: 800; background-color: rgba(0, 230, 118, 0.1); color: var(--color-calories); padding: 4px 10px; border-radius: var(--radius-pill); border: 1px solid rgba(0, 230, 118, 0.2); text-transform: uppercase; letter-spacing: 0.05em;">
           {{ healthConnectIsMocked ? 'Simulated' : 'Linked' }}
         </span>
-        <span *ngIf="healthConnectStatus === 'NotInstalled'" style="font-size: 0.75rem; font-weight: 700; background-color: hsla(25, 95%, 58%, 0.15); color: var(--color-protein); padding: 4px 10px; border-radius: 12px;">
+        <span *ngIf="healthConnectStatus === 'NotInstalled'" style="font-size: 0.65rem; font-weight: 800; background-color: rgba(213, 0, 249, 0.1); color: var(--color-protein); padding: 4px 10px; border-radius: var(--radius-pill); border: 1px solid rgba(213, 0, 249, 0.2); text-transform: uppercase; letter-spacing: 0.05em;">
           Not Installed
         </span>
-        <span *ngIf="healthConnectStatus === 'NotSupported'" style="font-size: 0.75rem; font-weight: 700; background-color: hsla(0, 75%, 45%, 0.15); color: #ff8a80; padding: 4px 10px; border-radius: 12px;">
+        <span *ngIf="healthConnectStatus === 'NotSupported'" style="font-size: 0.65rem; font-weight: 800; background-color: rgba(255, 23, 68, 0.1); color: var(--color-fat); padding: 4px 10px; border-radius: var(--radius-pill); border: 1px solid rgba(255, 23, 68, 0.2); text-transform: uppercase; letter-spacing: 0.05em;">
           Unsupported
         </span>
       </div>
 
-      <!-- Verbose status description/reason -->
-      <div *ngIf="healthConnectReason" style="font-size: 0.8rem; margin-top: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background-color: rgba(255,255,255,0.03); color: var(--text-secondary); border: 1px solid var(--glass-border); line-height: 1.45;">
-        {{ healthConnectReason }}
-      </div>
-
       <!-- Time range filters for Health Connect -->
-      <div *ngIf="healthConnectStatus === 'Available' || healthMode === 'manual'" style="display: flex; gap: 6px; margin-top: 4px; margin-bottom: 16px; background-color: rgba(0,0,0,0.15); padding: 4px; border-radius: 16px; border: 1px solid var(--glass-border);">
-        <button (click)="healthTimeFilter = 'today'; syncHealthData()" [style.background-color]="healthTimeFilter === 'today' ? 'var(--color-primary)' : 'transparent'" [style.color]="healthTimeFilter === 'today' ? 'white' : 'var(--text-muted)'" [style.font-weight]="healthTimeFilter === 'today' ? '700' : '400'" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s ease;">Today</button>
-        <button (click)="healthTimeFilter = 'yesterday'; syncHealthData()" [style.background-color]="healthTimeFilter === 'yesterday' ? 'var(--color-primary)' : 'transparent'" [style.color]="healthTimeFilter === 'yesterday' ? 'white' : 'var(--text-muted)'" [style.font-weight]="healthTimeFilter === 'yesterday' ? '700' : '400'" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s ease;">Yesterday</button>
-        <button (click)="healthTimeFilter = 'week'; syncHealthData()" [style.background-color]="healthTimeFilter === 'week' ? 'var(--color-primary)' : 'transparent'" [style.color]="healthTimeFilter === 'week' ? 'white' : 'var(--text-muted)'" [style.font-weight]="healthTimeFilter === 'week' ? '700' : '400'" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s ease;">7 Days</button>
+      <div *ngIf="healthConnectStatus === 'Available' || healthMode === 'manual'" style="display: flex; gap: 4px; margin-bottom: 20px; background-color: var(--bg-secondary); padding: 3px; border-radius: var(--radius-expressive-md); border: 1px solid var(--glass-border);">
+        <button (click)="healthTimeFilter = 'today'; syncHealthData()" [style.background-color]="healthTimeFilter === 'today' ? 'var(--bg-tertiary)' : 'transparent'" [style.color]="healthTimeFilter === 'today' ? 'var(--text-primary)' : 'var(--text-muted)'" style="flex: 1; padding: 8px; font-size: 0.75rem; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: var(--transition-smooth); font-family: var(--font-family);">Today</button>
+        <button (click)="healthTimeFilter = 'yesterday'; syncHealthData()" [style.background-color]="healthTimeFilter === 'yesterday' ? 'var(--bg-tertiary)' : 'transparent'" [style.color]="healthTimeFilter === 'yesterday' ? 'var(--text-primary)' : 'var(--text-muted)'" style="flex: 1; padding: 8px; font-size: 0.75rem; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: var(--transition-smooth); font-family: var(--font-family);">Yesterday</button>
+        <button (click)="healthTimeFilter = 'week'; syncHealthData()" [style.background-color]="healthTimeFilter === 'week' ? 'var(--bg-tertiary)' : 'transparent'" [style.color]="healthTimeFilter === 'week' ? 'var(--text-primary)' : 'var(--text-muted)'" style="flex: 1; padding: 8px; font-size: 0.75rem; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: var(--transition-smooth); font-family: var(--font-family);">7 Days</button>
       </div>
 
       <!-- Manual Input Override Form -->
-      <div *ngIf="healthMode === 'manual'" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; padding: 16px; border-radius: var(--radius-expressive-md); background-color: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);">
-        <h3 style="font-size: 0.9rem; font-weight: 700; color: var(--color-carbs); margin-bottom: 4px;">Manual Health Entries</h3>
-        
-        <div class="input-group" style="margin-bottom: 0;">
-          <label style="font-size: 0.75rem;">Daily Steps</label>
-          <input type="number" class="form-input" [(ngModel)]="manualSteps" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
-        </div>
-
-        <div class="input-group" style="margin-bottom: 0;">
-          <label style="font-size: 0.75rem;">Sleep Duration (Minutes)</label>
-          <input type="number" class="form-input" [(ngModel)]="manualSleep" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
-          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
-            = {{ Math.floor(manualSleep / 60) }} hours {{ manualSleep % 60 }} minutes
+      <div *ngIf="healthMode === 'manual'" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; padding: 16px; border-radius: var(--radius-expressive-md); background-color: var(--bg-secondary); border: 1px solid var(--glass-border);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.7rem;">Steps</label>
+            <input type="number" class="form-input" [(ngModel)]="manualSteps" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.7rem;">Sleep (Mins)</label>
+            <input type="number" class="form-input" [(ngModel)]="manualSleep" (ngModelChange)="syncHealthData()" style="padding: 10px 14px;">
           </div>
         </div>
       </div>
 
       <!-- If permission rationale required or not linked -->
-      <div *ngIf="healthMode === 'sync' && healthConnectStatus === 'Available' && dailySteps === 0 && !isSyncing" style="margin-bottom: 16px; background-color: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 16px; border-radius: var(--radius-expressive-md); text-align: center;">
-        <p style="font-size: 0.85rem; margin-bottom: 12px;">Sync your steps, sleep sessions, and workout history directly from your Android device.</p>
-        <button class="btn-primary" style="background: linear-gradient(135deg, var(--color-primary) 0%, hsl(207, 45%, 35%) 100%); box-shadow: 0 8px 20px -6px hsla(207, 45%, 40%, 0.25); color: white;" (click)="requestHealthConnectPermission()">
-          Authorize & Sync Data
+      <div *ngIf="healthMode === 'sync' && healthConnectStatus === 'Available' && dailySteps === 0 && !isSyncing" style="margin-bottom: 20px; background-color: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 18px; border-radius: var(--radius-expressive-md); text-align: center;">
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.45;">Sync steps, sleep, and workouts directly from your Google Health Connect data.</p>
+        <button class="btn-primary" style="width: 100%; font-size: 0.75rem; padding: 12px;" (click)="requestHealthConnectPermission()">
+          Authorize & Sync
         </button>
       </div>
 
       <!-- Syncing overlay -->
-      <div *ngIf="healthMode === 'sync' && isSyncing" style="text-align: center; padding: 16px 0;">
-        <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid var(--glass-border); border-top-color: var(--color-steps); border-radius: 50%; animation: 0.8s linear infinite rotate;" class="spinner"></div>
-        <p style="margin-top: 8px; font-size: 0.85rem; color: var(--color-steps);">Fetching Health Connect database...</p>
+      <div *ngIf="healthMode === 'sync' && isSyncing" style="text-align: center; padding: 20px 0;">
+        <div style="display: inline-block; width: 24px; height: 24px; border: 2.5px solid var(--glass-border); border-top-color: var(--color-steps); border-radius: 50%; animation: 0.8s linear infinite rotate;" class="spinner"></div>
+        <p style="margin-top: 8px; font-size: 0.75rem; color: var(--color-steps); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">Syncing...</p>
       </div>
 
-      <!-- Metrics Display -->
-      <div *ngIf="(healthConnectStatus === 'Available' || healthMode === 'manual') && (dailySteps > 0 || sleepSessions.length > 0)" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">
+      <!-- Metrics Display (Simplified Horizontal Bars) -->
+      <div *ngIf="(healthConnectStatus === 'Available' || healthMode === 'manual') && (dailySteps > 0 || sleepSessions.length > 0 || workouts.length > 0)" class="animate-fade-up" style="display: flex; flex-direction: column; gap: 16px;">
         
-        <!-- Steps row -->
-        <div style="background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--radius-expressive-md); display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 2px;">Daily Steps</div>
-            <div style="font-size: 1.4rem; font-weight: 900;" class="text-steps">{{ dailySteps | number }} steps</div>
-          </div>
-          <div style="font-size: 0.75rem; color: var(--text-muted); text-align: right;">
-            Goal: 10,000<br>
-            <strong>{{ Math.round((dailySteps / 10000) * 100) }}%</strong>
-          </div>
-        </div>
-
-        <!-- Sleep sessions -->
+        <!-- Steps Bar -->
         <div>
-          <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px;">Sleep Log (Last 7 Days)</div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div *ngFor="let sleep of sleepSessions" style="background-color: var(--bg-tertiary); padding: 12px; border-radius: var(--radius-expressive-md); display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-weight: 700; font-size: 0.9rem;" class="text-sleep">{{ sleep.stage || 'Sleep Session' }}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ formatDate(sleep.startTime) }} - {{ formatDate(sleep.endTime) }}</div>
-              </div>
-              <div style="font-weight: 800; font-size: 0.95rem;">
-                {{ Math.floor(sleep.durationMinutes / 60) }}h {{ sleep.durationMinutes % 60 }}m
-              </div>
-            </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">
+            <span class="text-steps" style="text-transform: uppercase; letter-spacing: 0.05em;">Steps</span>
+            <span>{{ dailySteps | number }} / 10,000</span>
+          </div>
+          <div style="height: 6px; background-color: var(--bg-secondary); border-radius: 3px; overflow: hidden; border: 1px solid var(--glass-border);">
+            <div [style.width.%]="Math.min(100, Math.round((dailySteps / 10000) * 100))" style="height: 100%; background-color: var(--color-steps); transition: var(--transition-smooth); box-shadow: 0 0 8px var(--color-steps);"></div>
           </div>
         </div>
 
-        <!-- Workouts list -->
-        <div>
-          <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px;">Workout Activity</div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div *ngFor="let workout of workouts" style="background-color: var(--bg-tertiary); padding: 12px; border-radius: var(--radius-expressive-md); display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-weight: 700; font-size: 0.9rem;" class="text-workout">{{ workout.title }}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Duration: {{ workout.durationMinutes }} mins ({{ workout.type }})</div>
-              </div>
-              <div style="text-align: right;">
-                <div class="text-workout" style="font-weight: 800; font-size: 0.95rem;">-{{ workout.caloriesBurned }} kcal</div>
-              </div>
-            </div>
+        <!-- Sleep Bar -->
+        <div *ngIf="sleepSessions.length > 0 || healthMode === 'manual'">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">
+            <span class="text-sleep" style="text-transform: uppercase; letter-spacing: 0.05em;">Sleep</span>
+            <span *ngIf="healthMode === 'manual'">{{ Math.floor(manualSleep / 60) }}h {{ manualSleep % 60 }}m</span>
+            <span *ngIf="healthMode === 'sync'">{{ Math.floor(sleepSessions[0]?.durationMinutes / 60) || 0 }}h {{ (sleepSessions[0]?.durationMinutes % 60) || 0 }}m</span>
+          </div>
+          <div style="height: 6px; background-color: var(--bg-secondary); border-radius: 3px; overflow: hidden; border: 1px solid var(--glass-border);">
+            <div [style.width.%]="healthMode === 'manual' ? Math.min(100, Math.round((manualSleep / 480) * 100)) : Math.min(100, Math.round(((sleepSessions[0]?.durationMinutes || 0) / 480) * 100))" style="height: 100%; background-color: var(--color-sleep); transition: var(--transition-smooth); box-shadow: 0 0 8px var(--color-sleep);"></div>
           </div>
         </div>
 
-        <!-- Manual Re-Sync Button -->
-        <button class="btn-secondary" style="width: 100%; border-color: var(--glass-border);" (click)="syncHealthData()" [disabled]="isSyncing">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
-          </svg>
-          Refresh Health Records
-        </button>
+        <!-- Workouts summary -->
+        <div *ngIf="workouts.length > 0">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px;">
+            <span class="text-workout" style="text-transform: uppercase; letter-spacing: 0.05em;">Workouts</span>
+            <span class="text-workout">{{ workouts.length }} active ({{ workouts[0]?.caloriesBurned || 0 }} kcal)</span>
+          </div>
+          <div style="height: 6px; background-color: var(--bg-secondary); border-radius: 3px; overflow: hidden; border: 1px solid var(--glass-border);">
+            <div style="width: 100%; height: 100%; background-color: var(--color-workout); box-shadow: 0 0 8px var(--color-workout);"></div>
+          </div>
+        </div>
+
+        <!-- Manual Re-Sync Link -->
+        <div style="text-align: right; margin-top: 4px;">
+          <button (click)="syncHealthData()" [disabled]="isSyncing" style="background: none; border: none; color: var(--color-primary); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline; letter-spacing: 0.02em; font-family: var(--font-family);">
+            {{ isSyncing ? 'Refreshing...' : 'Re-sync Health Data' }}
+          </button>
+        </div>
       </div>
     </div>
 
