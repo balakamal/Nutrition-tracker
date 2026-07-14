@@ -473,9 +473,9 @@
       </div>
     </div>
 
-    <!-- Vision Food Logger Card -->
+    <!-- Unified AI & Manual Food Logger Card -->
     <div class="glass-card">
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <div style="background-color: hsla(200, 95%, 52%, 0.15); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-carbs)" stroke-width="2">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
@@ -483,127 +483,152 @@
           </svg>
         </div>
         <div>
-          <h2 style="font-size: 1.25rem;">Vision Food Logger</h2>
-          <p style="font-size: 0.8rem; color: var(--text-muted);">Snap or upload a photo to estimate nutrition</p>
+          <h2 style="font-size: 1.25rem;">AI Food Logger</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Snap a photo, write a description, or log manually</p>
         </div>
       </div>
 
-      <!-- File Select Panel -->
-      <div style="border: 2px dashed var(--glass-border); border-radius: var(--radius-expressive-md); padding: 24px 16px; text-align: center; background-color: rgba(0,0,0,0.15); margin-bottom: 16px; position: relative;">
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;" [disabled]="isAnalyzing">
-        
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 10px;">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <circle cx="8.5" cy="8.5" r="1.5"></circle>
-          <polyline points="21 15 16 10 5 21"></polyline>
-        </svg>
-        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-secondary);">Click to capture or upload meal</div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Supports PNG, JPEG, HEIC</div>
-      </div>
-      </div>
-
-      <!-- Loading / Progress Ring -->
-      <div *ngIf="isAnalyzing" style="text-align: center; padding: 20px 0;">
-        <div style="display: inline-block; width: 36px; height: 36px; border: 4px solid var(--glass-border); border-top-color: var(--color-carbs); border-radius: 50%; animation: 0.8s linear infinite rotate;" class="spinner"></div>
-        <p style="margin-top: 12px; font-weight: 600; font-size: 0.9rem;" class="text-carbs">Gemini Vision AI analyzing ({{ uploadedFileName }})...</p>
-      </div>
-
-      <!-- Error view -->
-      <div *ngIf="analysisError" style="background-color: hsla(0, 75%, 45%, 0.15); border: 1px solid rgba(255,0,0,0.2); color: hsl(0, 75%, 75%); border-radius: var(--radius-expressive-md); padding: 16px; margin-bottom: 16px; font-size: 0.85rem;">
-        <div style="font-weight: 700; margin-bottom: 4px;">Analysis Failed</div>
-        {{ analysisError }}
-      </div>
-
-      <!-- Success Details Output Card (Vision Transform Modal style) -->
-      <div *ngIf="latestAnalysis" class="glass-card animate-fade-up" style="background-color: hsla(145, 75%, 48%, 0.08); border-color: rgba(76, 175, 80, 0.25); margin: 10px 0 0;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-          <h3 class="text-calories" style="font-size: 1.1rem; font-weight: 800;">Log Added: {{ latestAnalysis.mealName }}</h3>
-          <button (click)="clearLatestAnalysis()" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">✕</button>
-        </div>
-        <p style="font-size: 0.85rem; line-height: 1.4; margin-bottom: 12px;">{{ latestAnalysis.description }}</p>
-        
-        <div style="display: flex; gap: 16px; font-size: 0.85rem; font-weight: 700;">
-          <div>Kcal: <span class="text-calories">{{ latestAnalysis.calories }}</span></div>
-          <div>P: <span class="text-protein">{{ latestAnalysis.protein }}g</span></div>
-          <div>C: <span class="text-carbs">{{ latestAnalysis.carbs }}g</span></div>
-          <div>F: <span class="text-fat">{{ latestAnalysis.fat }}g</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AI Chat Logger Card -->
-    <div class="glass-card">
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-        <div style="width: 40px; height: 40px; border-radius: 12px; background-color: hsla(239, 84%, 67%, 0.15); display: flex; align-items: center; justify-content: center;" class="text-protein">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-          </svg>
-        </div>
-        <div>
-          <h2 style="font-size: 1.25rem;">AI Chat Assistant</h2>
-          <p style="font-size: 0.8rem; color: var(--text-muted);">Log foods by typing or dictating what you ate</p>
-        </div>
-      </div>
-
-      <!-- Quick suggestions -->
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" (click)="chatInputText = 'I had 2 boiled eggs and 1 slice of wheat toast'">
-          2 Eggs & Toast
-        </button>
-        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" (click)="chatInputText = 'Log 450 calories, 35g protein, 40g carbs'">
-          Direct: 450 kcal
-        </button>
-        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" (click)="chatInputText = 'Add 1 cup of white rice and 150g grilled chicken breast'">
-          Rice & Chicken
-        </button>
-      </div>
-
-      <!-- Input box -->
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <textarea class="form-input" [(ngModel)]="chatInputText" placeholder="Example: I ate a bowl of oatmeal with a handful of blueberries and a scoop of protein powder..." style="width: 100%; min-height: 80px; resize: none; font-size: 0.95rem; line-height: 1.4; padding: 12px; border-radius: var(--radius-expressive-md);"></textarea>
-        
-        <div *ngIf="chatError" style="font-size: 0.8rem; color: var(--color-fat); padding: 8px 12px; background-color: hsla(350, 89%, 60%, 0.1); border-radius: 8px; border-left: 3px solid var(--color-fat);">
-          {{ chatError }}
+      <!-- Main Input Panel (Hidden when previewing a pending result) -->
+      <div *ngIf="!pendingAnalysisResult">
+        <!-- Text Input Description -->
+        <div class="input-group" style="margin-bottom: 16px;">
+          <label style="font-size: 0.75rem;">Describe what you ate (Optional if photo attached)</label>
+          <textarea class="form-input" [(ngModel)]="aiInputText" placeholder="Example: I ate a bowl of oatmeal with a handful of blueberries and a scoop of protein powder..." style="width: 100%; min-height: 80px; resize: none; font-size: 0.9rem; line-height: 1.4; padding: 12px; border-radius: var(--radius-expressive-md);"></textarea>
         </div>
 
-        <button class="btn-primary" (click)="logFoodViaChat()" [disabled]="isChatLogging || !chatInputText.trim()" style="background: linear-gradient(135deg, var(--color-primary) 0%, hsl(207, 45%, 35%) 100%); box-shadow: 0 8px 24px -6px hsla(207, 45%, 40%, 0.35); color: white; width: 100%; margin-top: 8px;">
-          <span *ngIf="!isChatLogging" style="display: flex; align-items: center; gap: 8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        <!-- File Select and Preview Thumbnail -->
+        <div style="margin-bottom: 16px;">
+          <!-- Dashed Upload Zone when no image selected -->
+          <div *ngIf="!selectedImageBase64" style="border: 2px dashed var(--glass-border); border-radius: var(--radius-expressive-md); padding: 20px 16px; text-align: center; background-color: rgba(0,0,0,0.15); position: relative; cursor: pointer; transition: var(--transition-smooth);"
+               onmouseover="this.style.borderColor='var(--color-primary)'"
+               onmouseout="this.style.borderColor='var(--glass-border)'">
+            <input type="file" (change)="onFileSelected($event)" accept="image/*" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;" [disabled]="isAnalyzing">
+            
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 8px;">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
             </svg>
-            Analyze & Log Meal
-          </span>
-          <span *ngIf="isChatLogging" style="display: flex; align-items: center; gap: 8px;">
-            <div style="display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: 0.8s linear infinite rotate;" class="spinner"></div>
-            Consulting Gemini...
-          </span>
-        </button>
-      </div>
+            <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary);">Click to attach a meal photo</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;">Supports PNG, JPEG, HEIC</div>
+          </div>
 
-      <!-- Pending Chat Result / Confirmation Pill -->
-      <div *ngIf="pendingChatResult" class="glass-card animate-fade-up" style="background-color: hsla(207, 45%, 35%, 0.1); border-color: rgba(30, 136, 229, 0.3); margin-top: 16px; padding: 14px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-          <h3 class="text-protein" style="font-size: 1rem; font-weight: 800; margin: 0;">AI Generated entry: {{ pendingChatResult.mealName }}</h3>
-          <button (click)="clearPendingChatResult()" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">✕</button>
-        </div>
-        <p style="font-size: 0.85rem; line-height: 1.4; margin: 0 0 12px; color: var(--text-secondary);">{{ pendingChatResult.description }}</p>
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; background-color: rgba(0,0,0,0.15); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px;">
-          <div style="display: flex; gap: 14px; font-size: 0.8rem; font-weight: 700;">
-            <div>Kcal: <span class="text-calories">{{ pendingChatResult.calories }}</span></div>
-            <div>P: <span class="text-protein">{{ pendingChatResult.protein }}g</span></div>
-            <div>C: <span class="text-carbs">{{ pendingChatResult.carbs }}g</span></div>
-            <div>F: <span class="text-fat">{{ pendingChatResult.fat }}g</span></div>
+          <!-- Image Preview Block when image is selected -->
+          <div *ngIf="selectedImageBase64" style="position: relative; border-radius: var(--radius-expressive-md); overflow: hidden; border: 1px solid var(--glass-border); background-color: rgba(0,0,0,0.2); padding: 10px; display: flex; align-items: center; gap: 12px;">
+            <img [src]="selectedImageBase64" style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                {{ selectedImageName }}
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Photo Attached</div>
+            </div>
+            <button (click)="clearSelectedImage()" style="background: rgba(255,23,68,0.1); border: 1px solid rgba(255,23,68,0.2); color: #ff1744; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-smooth);" title="Remove photo"
+                    onmouseover="this.style.background='rgba(255,23,68,0.25)'"
+                    onmouseout="this.style.background='rgba(255,23,68,0.1)'">
+              ✕
+            </button>
           </div>
         </div>
-        
-        <button class="btn-primary" (click)="confirmAndLogPendingChat()" style="background: linear-gradient(135deg, var(--color-calories) 0%, hsl(352, 65%, 45%) 100%); color: white; padding: 10px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; width: 100%; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 75, 75, 0.25);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Log this Meal
-        </button>
+
+        <!-- Action Button Group -->
+        <div style="display: flex; gap: 10px;">
+          <!-- Analyze Button -->
+          <button class="btn-primary" (click)="analyzeFood()" [disabled]="isAnalyzing || (!selectedImageBase64 && !aiInputText.trim())" style="flex: 1.5; font-size: 0.85rem; height: 48px;">
+            <span *ngIf="!isAnalyzing" style="display: flex; align-items: center; gap: 6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              Analyze with AI
+            </span>
+            <span *ngIf="isAnalyzing" style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: rotate 0.8s linear infinite;" class="spinner"></div>
+              Estimating...
+            </span>
+          </button>
+
+          <!-- Manual Log Button (Instant bypass) -->
+          <button class="btn-secondary" (click)="startManualLog()" [disabled]="isAnalyzing" style="flex: 1; font-size: 0.85rem; height: 48px; border-color: var(--glass-border);">
+            Log Manually
+          </button>
+        </div>
+
+        <div *ngIf="analysisError" style="margin-top: 12px; background-color: rgba(255, 23, 68, 0.1); border: 1px solid rgba(255, 23, 68, 0.2); color: #ff1744; font-size: 0.78rem; padding: 10px; border-radius: var(--radius-expressive-md);">
+          {{ analysisError }}
+        </div>
+      </div>
+
+      <!-- Pending Log Preview and Verification Block (Shows when pendingAnalysisResult is set) -->
+      <div *ngIf="pendingAnalysisResult" class="animate-fade-up" style="border-top: 1px solid var(--glass-border); padding-top: 16px; margin-top: 8px;">
+        <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--color-primary); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+          Verify & Edit Food Entry
+        </h3>
+
+        <!-- Form fields for manual override -->
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px;">
+          <div class="input-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.7rem;">Meal Name</label>
+            <input type="text" class="form-input" [(ngModel)]="pendingAnalysisResult.mealName" style="padding: 10px 14px; font-size: 0.9rem; height: 42px;">
+          </div>
+
+          <!-- Calories & Protein -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="input-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.7rem;" class="text-calories">Calories (kcal)</label>
+              <input type="number" class="form-input" [(ngModel)]="pendingAnalysisResult.calories" style="padding: 10px 14px; font-size: 0.9rem; height: 42px;">
+            </div>
+            <div class="input-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.7rem;" class="text-protein">Protein (g)</label>
+              <input type="number" class="form-input" [(ngModel)]="pendingAnalysisResult.protein" style="padding: 10px 14px; font-size: 0.9rem; height: 42px;">
+            </div>
+          </div>
+
+          <!-- Carbs & Fat -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="input-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.7rem;" class="text-carbs">Carbs (g)</label>
+              <input type="number" class="form-input" [(ngModel)]="pendingAnalysisResult.carbs" style="padding: 10px 14px; font-size: 0.9rem; height: 42px;">
+            </div>
+            <div class="input-group" style="margin-bottom: 0;">
+              <label style="font-size: 0.7rem;" class="text-fat">Fat (g)</label>
+              <input type="number" class="form-input" [(ngModel)]="pendingAnalysisResult.fat" style="padding: 10px 14px; font-size: 0.9rem; height: 42px;">
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 0;">
+            <label style="font-size: 0.7rem;">Description / Notes</label>
+            <textarea class="form-input" [(ngModel)]="pendingAnalysisResult.description" style="padding: 10px 14px; font-size: 0.85rem; min-height: 60px; line-height: 1.4; resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- Refinement Prompt box (only show if it is NOT a manual entry) -->
+        <div *ngIf="!isManualEntry" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 14px; margin-bottom: 18px;">
+          <label style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">
+            Refine with AI (e.g. "I only ate half", "It had extra cheese")
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="form-input" [(ngModel)]="refinePrompt" placeholder="Describe changes..." style="flex: 1; font-size: 0.85rem; padding: 8px 12px; height: 38px;" [disabled]="isAnalyzing">
+            <button class="btn-secondary" style="font-size: 0.75rem; padding: 0 14px; height: 38px; border-color: rgba(213, 0, 249, 0.2); background-color: rgba(213, 0, 249, 0.05); color: var(--color-protein);" (click)="refineFoodAnalysis()" [disabled]="isAnalyzing || !refinePrompt.trim()">
+              <span *ngIf="!isAnalyzing">Refine</span>
+              <span *ngIf="isAnalyzing" class="spinner" style="display: inline-block; width: 10px; height: 10px; border: 2px solid var(--color-protein); border-top-color: transparent; border-radius: 50%;"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error view during refinement -->
+        <div *ngIf="analysisError" style="margin-bottom: 12px; background-color: rgba(255, 23, 68, 0.1); border: 1px solid rgba(255, 23, 68, 0.2); color: #ff1744; font-size: 0.78rem; padding: 10px; border-radius: var(--radius-expressive-md);">
+          {{ analysisError }}
+        </div>
+
+        <!-- Confirm and Cancel buttons -->
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-primary" (click)="confirmAndAddLog()" style="flex: 1.5; font-size: 0.85rem; height: 44px; background: linear-gradient(135deg, var(--color-calories) 0%, #00c853 100%); box-shadow: 0 4px 14px -4px rgba(0,230,118,0.4);">
+            Confirm & Add Log
+          </button>
+          <button class="btn-secondary" (click)="cancelPendingLog()" style="flex: 1; font-size: 0.85rem; height: 44px; border-color: var(--glass-border);">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
 

@@ -85,16 +85,16 @@ export class AppComponent implements OnInit {
   isGeneratingHistoricalAnalytics = false;
   historicalAnalyticsError: string | null = null;
 
-  // Vision Logging State
+  // Unified AI & Manual Food Logger State
+  aiInputText = '';
+  selectedImageBase64: string | null = null;
+  selectedImageMimeType: string | null = null;
+  selectedImageName: string | null = null;
   isAnalyzing = false;
   analysisError: string | null = null;
-  uploadedFileName: string | null = null;
-  latestAnalysis: FoodAnalysisResult | null = null;
-
-  // Chat Logging State
-  chatInputText = '';
-  isChatLogging = false;
-  chatError: string | null = null;
+  pendingAnalysisResult: FoodAnalysisResult | null = null;
+  refinePrompt = '';
+  isManualEntry = false;
 
   demoFoods: any[] = [];
 
@@ -558,100 +558,156 @@ export class AppComponent implements OnInit {
     this.expandedLogIndex = this.expandedLogIndex === index ? null : index;
   }
 
-  // File Upload Handling
+  // File Upload & Unified AI Logger Handling
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (!file) return;
 
-    this.uploadedFileName = file.name;
-    this.isAnalyzing = true;
+    this.selectedImageName = file.name;
     this.analysisError = null;
 
     const reader = new FileReader();
-    reader.onload = async (e: any) => {
-      const base64Data = e.target.result;
-      try {
-        const result = await this.geminiService.analyzeFoodImage(base64Data, file.type);
-        await this.addFoodLog(result);
-      } catch (err: any) {
-        this.analysisError = err?.message || 'Gemini Vision analysis failed. Please verify your API Key and image.';
-      } finally {
-        this.isAnalyzing = false;
-      }
+    reader.onload = (e: any) => {
+      this.selectedImageBase64 = e.target.result;
+      this.selectedImageMimeType = file.type;
     };
     reader.onerror = () => {
       this.analysisError = 'Failed to read image file.';
-      this.isAnalyzing = false;
     };
     reader.readAsDataURL(file);
   }
 
-  async addFoodLog(result: FoodAnalysisResult): Promise<void> {
-    this.latestAnalysis = result;
-    this.foodLogs.unshift(result);
+  clearSelectedImage(): void {
+    this.selectedImageBase64 = null;
+    this.selectedImageMimeType = null;
+    this.selectedImageName = null;
+  }
+
+  async analyzeFood(): Promise<void> {
+    if (!this.selectedImageBase64 && !this.aiInputText.trim()) {
+      this.analysisError = 'Please upload a photo, write a description, or click Log Manually.';
+      return;
+    }
+
+    this.isAnalyzing = true;
+    this.analysisError = null;
+    this.pendingAnalysisResult = null;
+    this.isManualEntry = false;
+
+    try {
+      if (this.selectedImageBase64) {
+        const result = await this.geminiService.analyzeFoodImage(
+          this.selectedImageBase64,
+          this.selectedImageMimeType || 'image/jpeg',
+          this.aiInputText
+        );
+        this.pendingAnalysisResult = result;
+      } else {
+        const result = await this.geminiService.analyzeFoodText(this.aiInputText);
+        this.pendingAnalysisResult = result;
+      }
+    } catch (err: any) {
+      this.analysisError = err?.message || 'AI estimation failed. Check your API Key and input.';
+    } finally {
+      this.isAnalyzing = false;
+    }
+  }
+
+  startManualLog(): void {
+    this.pendingAnalysisResult = {
+      mealName: '',
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      description: 'Manually logged.'
+    };
+    this.isManualEntry = true;
+    this.analysisError = null;
+  }
+
+  async refineFoodAnalysis(): Promise<void> {
+    if (!this.refinePrompt.trim()) return;
+
+    this.isAnalyzing = true;
+    this.analysisError = null;
+
+    const fullPrompt = `${this.aiInputText} | Additional adjustment requested by user: ${this.refinePrompt}`;
+
+    try {
+      if (this.selectedImageBase64) {
+        const result = await this.geminiService.analyzeFoodImage(
+          this.selectedImageBase64,
+          this.selectedImageMimeType || 'image/jpeg',
+          fullPrompt
+        );
+        this.pendingAnalysisResult = result;
+      } else {
+        const result = await this.geminiService.analyzeFoodText(fullPrompt);
+        this.pendingAnalysisResult = result;
+      }
+      this.refinePrompt = '';
+    } catch (err: any) {
+      this.analysisError = err?.message || 'Refinement failed. Please try again.';
+    } finally {
+      this.isAnalyzing = false;
+    }
+  }
+
+  async confirmAndAddLog(): Promise<void> {
+    if (!this.pendingAnalysisResult) return;
+
+    // Direct validation of numeric types to prevent string type issues from HTML inputs
+    this.pendingAnalysisResult.calories = Number(this.pendingAnalysisResult.calories) || 0;
+    this.pendingAnalysisResult.protein = Number(this.pendingAnalysisResult.protein) || 0;
+    this.pendingAnalysisResult.carbs = Number(this.pendingAnalysisResult.carbs) || 0;
+    this.pendingAnalysisResult.fat = Number(this.pendingAnalysisResult.fat) || 0;
+
+    this.foodLogs.unshift({ ...this.pendingAnalysisResult });
     const logsJson = JSON.stringify(this.foodLogs);
     await Preferences.set({ key: 'food_logs', value: logsJson });
     localStorage.setItem('food_logs', logsJson);
     this.calculateTotals();
+
     if (this.isLoggedIn) {
       await this.saveUserDataToFirebase();
     }
+
+    // Reset logger state
+    this.pendingAnalysisResult = null;
+    this.aiInputText = '';
+    this.refinePrompt = '';
+    this.clearSelectedImage();
+    this.isManualEntry = false;
   }
 
-  clearLatestAnalysis(): void {
-    this.latestAnalysis = null;
+  cancelPendingLog(): void {
+    this.pendingAnalysisResult = null;
+    this.refinePrompt = '';
+    this.isManualEntry = false;
   }
 
   // Progress Percentages
   getCaloriePercentage(): number {
-    return Math.min(100, Math.round((this.consumedCalories / this.targetCalories) * 100));
+    return Math.min(100, Math.round((this.consumedCalories / (this.targetCalories || 2000)) * 100));
   }
 
   getProteinPercentage(): number {
-    return Math.min(100, Math.round((this.consumedProtein / this.targetProtein) * 100));
+    return Math.min(100, Math.round((this.consumedProtein / (this.targetProtein || 120)) * 100));
   }
 
   getCarbsPercentage(): number {
-    return Math.min(100, Math.round((this.consumedCarbs / this.targetCarbs) * 100));
+    return Math.min(100, Math.round((this.consumedCarbs / (this.targetCarbs || 250)) * 100));
   }
 
   getFatPercentage(): number {
-    return Math.min(100, Math.round((this.consumedFat / this.targetFat) * 100));
+    return Math.min(100, Math.round((this.consumedFat / (this.targetFat || 70)) * 100));
   }
 
   // Helpers for formatting
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // Chat Logging Operation
-  async logFoodViaChat(): Promise<void> {
-    if (!this.chatInputText.trim()) return;
-    this.isChatLogging = true;
-    this.chatError = null;
-    this.pendingChatResult = null;
-    try {
-      const result = await this.geminiService.analyzeFoodText(this.chatInputText);
-      this.pendingChatResult = result;
-      this.chatInputText = '';
-    } catch (e: any) {
-      console.error('Failed to log food via chat:', e);
-      this.chatError = e.message || 'Failed to parse text entry. Please try again.';
-    } finally {
-      this.isChatLogging = false;
-    }
-  }
-
-  confirmAndLogPendingChat(): void {
-    if (this.pendingChatResult) {
-      this.addFoodLog(this.pendingChatResult);
-      this.pendingChatResult = null;
-    }
-  }
-
-  clearPendingChatResult(): void {
-    this.pendingChatResult = null;
   }
 
   // Local Notification Reminders

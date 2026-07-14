@@ -89,7 +89,7 @@ export class GeminiService {
    * @param base64Image The base64 string of the image (without the data:image/*;base64 prefix)
    * @param mimeType The mime type of the image, e.g. "image/jpeg"
    */
-  async analyzeFoodImage(base64Image: string, mimeType: string): Promise<FoodAnalysisResult> {
+  async analyzeFoodImage(base64Image: string, mimeType: string, additionalText?: string): Promise<FoodAnalysisResult> {
     const apiKey = await this.getApiKey();
     if (!apiKey) {
       throw new Error('Gemini API key is not configured.');
@@ -97,7 +97,7 @@ export class GeminiService {
 
     const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
 
-    const prompt = `Analyze this food image. Provide the name of the meal, estimated macronutrients, and list any significant vitamins and minerals present in the meal. 
+    let prompt = `Analyze this food image. Provide the name of the meal, estimated macronutrients, and list any significant vitamins and minerals present in the meal. 
 Respond ONLY with a JSON object. Do not write any markdown wrappers (like \`\`\`json) or extra text.
 The JSON format MUST be exactly:
 {
@@ -110,6 +110,10 @@ The JSON format MUST be exactly:
   "vitamins": ["Vitamin A", "Vitamin C"],
   "minerals": ["Calcium", "Iron"]
 }`;
+
+    if (additionalText && additionalText.trim()) {
+      prompt += `\nAdditional user notes or context description about the meal: "${additionalText.trim()}"`;
+    }
 
     const requestBody = {
       contents: [
