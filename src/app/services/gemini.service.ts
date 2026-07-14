@@ -268,7 +268,7 @@ The JSON format MUST be exactly:
 
     const foodSummary = foodLogs.map(log => `- ${log.mealName}: ${log.calories} kcal (P:${log.protein}g, C:${log.carbs}g, F:${log.fat}g)`).join('\n');
 
-    const prompt = `You are AETHER, a premium medical-grade AI nutrition and fitness advisor. 
+    const prompt = `You are VITAL, a premium medical-grade AI nutrition and fitness advisor. 
 Analyze the user's health metrics for today and construct a highly premium, concise daily summary.
 Keep your analysis brief (under 120 words), direct, encouraging, and actionable. Write in high-end, clean markdown.
 
