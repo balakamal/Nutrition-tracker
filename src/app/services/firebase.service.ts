@@ -40,9 +40,22 @@ export class FirebaseService {
   public currentUserEmail: string | null = null;
   public currentUserId: string | null = null;
 
+  private onAuthStateChangedListener: ((user: any) => void) | null = null;
+
   // Ponytail: Fallback mock authentication if Firebase credentials are default/empty.
   // Upgrade Path: Set up an actual Firebase web app in console.firebase.google.com and input config.
   private isMockMode = true;
+
+  registerAuthStateListener(callback: (user: any) => void) {
+    this.onAuthStateChangedListener = callback;
+    if (this.isFirebaseInitialized) {
+      if (this.currentUserEmail) {
+        callback({ email: this.currentUserEmail, uid: this.currentUserId });
+      } else if (!this.isMockMode) {
+        callback(null);
+      }
+    }
+  }
 
   constructor() {
     this.initFirebase();
@@ -64,6 +77,18 @@ export class FirebaseService {
     await Preferences.set({ key: 'firebase_config', value: JSON.stringify(config) });
     localStorage.setItem('firebase_config', JSON.stringify(config));
     this.isFirebaseInitialized = false;
+    await this.initFirebase();
+  }
+
+  async clearFirebaseConfig(): Promise<void> {
+    await Preferences.remove({ key: 'firebase_config' });
+    localStorage.removeItem('firebase_config');
+    this.currentFirebaseConfig = null;
+    this.isMockMode = true;
+    this.isFirebaseInitialized = false;
+    this.currentUserEmail = null;
+    this.currentUserId = null;
+    await Preferences.remove({ key: 'mock_current_user' });
     await this.initFirebase();
   }
 
@@ -94,6 +119,9 @@ export class FirebaseService {
           } else {
             this.currentUserEmail = null;
             this.currentUserId = null;
+          }
+          if (this.onAuthStateChangedListener) {
+            this.onAuthStateChangedListener(user ? { email: user.email, uid: user.uid } : null);
           }
         });
         
@@ -128,6 +156,9 @@ export class FirebaseService {
         this.currentUserEmail = email;
         this.currentUserId = `mock_uid_${email.replace(/[^a-zA-Z0-9]/g, '')}`;
         await Preferences.set({ key: 'mock_current_user', value: email });
+        if (this.onAuthStateChangedListener) {
+          this.onAuthStateChangedListener({ email: this.currentUserEmail, uid: this.currentUserId });
+        }
         return { email, uid: this.currentUserId };
       } else {
         throw new Error('Invalid email or password (Mock Mode).');
@@ -145,6 +176,9 @@ export class FirebaseService {
       this.currentUserEmail = 'google-user@gmail.com';
       this.currentUserId = 'mock_uid_googleuser';
       await Preferences.set({ key: 'mock_current_user', value: this.currentUserEmail });
+      if (this.onAuthStateChangedListener) {
+        this.onAuthStateChangedListener({ email: this.currentUserEmail, uid: this.currentUserId });
+      }
       return { email: this.currentUserEmail, uid: this.currentUserId };
     } else {
       const provider = new GoogleAuthProvider();
@@ -171,6 +205,9 @@ export class FirebaseService {
       this.currentUserEmail = email;
       this.currentUserId = `mock_uid_${email.replace(/[^a-zA-Z0-9]/g, '')}`;
       await Preferences.set({ key: 'mock_current_user', value: email });
+      if (this.onAuthStateChangedListener) {
+        this.onAuthStateChangedListener({ email: this.currentUserEmail, uid: this.currentUserId });
+      }
       return { email, uid: this.currentUserId };
     } else {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
@@ -185,6 +222,9 @@ export class FirebaseService {
       this.currentUserEmail = null;
       this.currentUserId = null;
       await Preferences.remove({ key: 'mock_current_user' });
+      if (this.onAuthStateChangedListener) {
+        this.onAuthStateChangedListener(null);
+      }
     } else {
       await signOut(this.auth);
       this.currentUserEmail = null;

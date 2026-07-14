@@ -72,13 +72,18 @@ export class AppComponent implements OnInit {
   summaryError: string | null = null;
 
   // Firebase Integration State
-  isLoggedIn = true;
+  isLoggedIn = false;
   firebaseEmail = '';
   firebasePassword = '';
   isLoginMode = true;
   firebaseError: string | null = null;
   isFirebaseBusy = false;
   firebaseConfigJson = '';
+
+  // Historical Analytics State
+  historicalAnalyticsText: string | null = null;
+  isGeneratingHistoricalAnalytics = false;
+  historicalAnalyticsError: string | null = null;
 
   // Vision Logging State
   isAnalyzing = false;
@@ -103,6 +108,16 @@ export class AppComponent implements OnInit {
     await this.migrateStorageIfNeeded();
     await this.checkApiKeyConfig();
     
+    // Register the Firebase auth listener
+    this.firebaseService.registerAuthStateListener(async (user) => {
+      if (user) {
+        this.isLoggedIn = true;
+        await this.loadUserDataFromFirebase();
+      } else {
+        this.isLoggedIn = false;
+      }
+    });
+
     // Load saved Firebase config json
     const savedConfig = await this.firebaseService.loadFirebaseConfig();
     this.firebaseConfigJson = savedConfig ? JSON.stringify(savedConfig, null, 2) : '';
@@ -125,6 +140,10 @@ export class AppComponent implements OnInit {
     this.initTheme();
     await this.initReminders();
     await this.checkAndAutoSummary();
+
+    // Load historical analytics cache
+    const { value: savedAnalytics } = await Preferences.get({ key: 'historical_analytics' });
+    this.historicalAnalyticsText = savedAnalytics || localStorage.getItem('historical_analytics');
   }
 
   // Theme Management
@@ -223,6 +242,21 @@ export class AppComponent implements OnInit {
     await this.saveUserProfile();
     this.showSettings = false;
     this.analysisError = null;
+  }
+
+  async saveFirebaseConfig(): Promise<void> {
+    if (!this.firebaseConfigJson.trim()) {
+      await this.firebaseService.clearFirebaseConfig();
+      alert('Firebase config cleared. Returned to Mock Offline Database mode.');
+      return;
+    }
+    try {
+      const config = JSON.parse(this.firebaseConfigJson);
+      await this.firebaseService.saveFirebaseConfig(config);
+      alert('Firebase configuration saved successfully! Switched to Cloud Mode.');
+    } catch (e: any) {
+      alert('Invalid JSON format: ' + (e?.message || 'verify syntax'));
+    }
   }
 
   async resetApiKey(): Promise<void> {
@@ -733,6 +767,36 @@ export class AppComponent implements OnInit {
 
         this.calculateTotals();
         this.recalculateGoals();
+
+        // Write to native Preferences and localStorage for local persistence
+        const profile = {
+          name: this.profileName,
+          age: this.profileAge,
+          gender: this.profileGender,
+          weight: this.profileWeight,
+          height: this.profileHeight,
+          activity: this.profileActivity,
+          goal: this.profileGoal
+        };
+        const profileJson = JSON.stringify(profile);
+        await Preferences.set({ key: 'user_profile', value: profileJson });
+        localStorage.setItem('user_profile', profileJson);
+
+        const logsJson = JSON.stringify(this.foodLogs);
+        await Preferences.set({ key: 'food_logs', value: logsJson });
+        localStorage.setItem('food_logs', logsJson);
+
+        await Preferences.set({ key: 'health_mode', value: this.healthMode });
+        await Preferences.set({ key: 'manual_steps', value: String(this.manualSteps) });
+        await Preferences.set({ key: 'manual_sleep', value: String(this.manualSleep) });
+        await Preferences.set({ key: 'reminders_enabled', value: String(this.remindersEnabled) });
+        await Preferences.set({ key: 'health_time_filter', value: this.healthTimeFilter });
+
+        localStorage.setItem('health_mode', this.healthMode);
+        localStorage.setItem('manual_steps', String(this.manualSteps));
+        localStorage.setItem('manual_sleep', String(this.manualSleep));
+        localStorage.setItem('reminders_enabled', String(this.remindersEnabled));
+        localStorage.setItem('health_time_filter', this.healthTimeFilter);
       }
     } catch (e) {
       console.error('Failed to load user data from Firebase:', e);
@@ -852,6 +916,34 @@ export class AppComponent implements OnInit {
       if (currentHour >= 21) {
         await this.triggerDailySummary();
       }
+    }
+  }
+
+  async triggerHistoricalAnalytics(): Promise<void> {
+    this.isGeneratingHistoricalAnalytics = true;
+    this.historicalAnalyticsError = null;
+    try {
+      const profile = {
+        name: this.profileName,
+        age: this.profileAge,
+        gender: this.profileGender,
+        weight: this.profileWeight,
+        height: this.profileHeight,
+        activity: this.profileActivity,
+        goal: this.profileGoal
+      };
+      
+      const analysis = await this.geminiService.generatePastDataAnalytics(
+        this.foodLogs,
+        profile
+      );
+      this.historicalAnalyticsText = analysis;
+      await Preferences.set({ key: 'historical_analytics', value: analysis });
+      localStorage.setItem('historical_analytics', analysis);
+    } catch (e: any) {
+      this.historicalAnalyticsError = e?.message || 'Failed to generate recommendations.';
+    } finally {
+      this.isGeneratingHistoricalAnalytics = false;
     }
   }
 }

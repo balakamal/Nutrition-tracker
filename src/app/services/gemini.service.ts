@@ -316,4 +316,95 @@ Provide your feedback in two sections:
       throw error;
     }
   }
+
+  /**
+   * Generates long-term recommendations and analytics based on historical logs.
+   */
+  async generatePastDataAnalytics(
+    foodLogs: FoodAnalysisResult[],
+    userProfile: any
+  ): Promise<string> {
+    const apiKey = await this.getApiKey();
+    if (!apiKey) {
+      throw new Error('Gemini API key is not configured.');
+    }
+
+    const logCount = foodLogs.length;
+    let averageCalories = 0;
+    let averageProtein = 0;
+    let averageCarbs = 0;
+    let averageFat = 0;
+
+    if (logCount > 0) {
+      const sumCalories = foodLogs.reduce((acc, log) => acc + (log.calories || 0), 0);
+      const sumProtein = foodLogs.reduce((acc, log) => acc + (log.protein || 0), 0);
+      const sumCarbs = foodLogs.reduce((acc, log) => acc + (log.carbs || 0), 0);
+      const sumFat = foodLogs.reduce((acc, log) => acc + (log.fat || 0), 0);
+
+      averageCalories = Math.round(sumCalories / logCount);
+      averageProtein = Math.round(sumProtein / logCount);
+      averageCarbs = Math.round(sumCarbs / logCount);
+      averageFat = Math.round(sumFat / logCount);
+    }
+
+    const logsSummary = foodLogs.slice(0, 30).map(log => 
+      `- ${log.mealName}: ${log.calories} kcal (P: ${log.protein}g, C: ${log.carbs}g, F: ${log.fat}g) - ${log.description || ''}`
+    ).join('\n');
+
+    const prompt = `You are VITAL, a premium medical-grade AI nutrition and fitness advisor.
+Analyze the user's historical log patterns and construct a highly premium, executive-level health review & recommendation report.
+Keep your analysis concise (under 250 words), professional, insightful, and actionable. Write in high-end, clean markdown.
+
+User Profile:
+- Name: ${userProfile.name || 'User'}
+- Age: ${userProfile.age || 'N/A'} years
+- Gender: ${userProfile.gender || 'N/A'}
+- Weight: ${userProfile.weight || 'N/A'} kg
+- Height: ${userProfile.height || 'N/A'} cm
+- Activity Level: ${userProfile.activity || 'N/A'}
+- Weight Goal: ${userProfile.goal || 'N/A'}
+
+Historical Summary:
+- Total logs analyzed: ${logCount}
+- Average meal calories: ${averageCalories} kcal
+- Average macros per logged meal: Protein: ${averageProtein}g, Carbs: ${averageCarbs}g, Fat: ${averageFat}g
+
+Here are the last 30 logged food entries for context:
+${logsSummary || 'No food logs recorded yet.'}
+
+Provide your response in three clearly formatted markdown sections:
+1. **NUTRITIONAL TRENDS & OBSERVATIONS**: Critical insights on user's macro distributions, caloric balance, and log patterns (e.g. are they getting enough protein? is fat too high?).
+2. **PERSONALIZED RECOMMENDATIONS**: Specific dietary, lifestyle, or behavioral adjustments mapped to their Weight Goal (${userProfile.goal || 'N/A'}) and profile.
+3. **STRATEGIC MEAL IDEAS**: 2-3 specific meal combinations (specifying approximate calorie and protein content) that would improve their current macro trajectory.`;
+
+    const requestBody = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        maxOutputTokens: 600
+      }
+    };
+
+    try {
+      const response = await fetch(`${this.apiEndpoint}?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+      }
+
+      const responseData = await response.json();
+      const textResponse = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!textResponse) {
+        throw new Error('No content returned from Gemini.');
+      }
+      return textResponse.trim();
+    } catch (error) {
+      console.error('Error generating historical analytics:', error);
+      throw error;
+    }
+  }
 }
