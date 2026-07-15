@@ -4,4 +4,5 @@
     <string name="title_activity_main">Nutrition Tracker</string>
     <string name="package_name">com.personal.nutritiontracker</string>
     <string name="custom_url_scheme">com.personal.nutritiontracker</string>
+    <string name="server_client_id">399325901526-9fje7pku9e8h0h4k4k4k4k4k4k4k4k4k.apps.googleusercontent.com</string>
 </resources>

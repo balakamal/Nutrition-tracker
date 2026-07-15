@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
+import { Capacitor } from '@capacitor/core';
 import { initializeApp, getApp, getApps } from 'firebase/app';
 import {
   getAuth,
@@ -9,6 +10,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithCredential,
   User
 } from 'firebase/auth';
 import {
@@ -26,6 +28,7 @@ export interface FirebaseConfig {
   messagingSenderId: string;
   appId: string;
   measurementId: string;
+  googleClientId?: string;
 }
 
 // BUNDLED DEFAULT CONFIGURATION (OPTIONAL)
@@ -38,7 +41,8 @@ export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig | null = {
   storageBucket: "vital-3e770.firebasestorage.app",
   messagingSenderId: "399325901526",
   appId: "1:399325901526:web:5128738b9f321de106cf77",
-  measurementId: "G-5FF0DYHF9N"
+  measurementId: "G-5FF0DYHF9N",
+  googleClientId: "399325901526-9fje7pku9e8h0h4k4k4k4k4k4k4k4k4k.apps.googleusercontent.com"
 };
 
 @Injectable({
@@ -199,11 +203,43 @@ export class FirebaseService {
       }
       return { email: this.currentUserEmail, uid: this.currentUserId };
     } else {
-      const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(this.auth, provider);
-      this.currentUserEmail = userCredential.user.email;
-      this.currentUserId = userCredential.user.uid;
-      return userCredential.user;
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+          const clientId = this.currentFirebaseConfig?.googleClientId || DEFAULT_FIREBASE_CONFIG?.googleClientId;
+          
+          try {
+            await GoogleAuth.initialize({
+              clientId: clientId,
+              scopes: ['profile', 'email'],
+              grantOfflineAccess: true
+            });
+          } catch (initErr) {
+            console.log('GoogleAuth already initialized or init skipped', initErr);
+          }
+
+          const googleUser = await GoogleAuth.signIn();
+          if (!googleUser?.authentication?.idToken) {
+            throw new Error('Google Sign-In did not return an ID token.');
+          }
+
+          const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+          const userCredential = await signInWithCredential(this.auth, credential);
+          
+          this.currentUserEmail = userCredential.user.email;
+          this.currentUserId = userCredential.user.uid;
+          return userCredential.user;
+        } catch (error) {
+          console.error('Native Google Sign-In failed', error);
+          throw error;
+        }
+      } else {
+        const provider = new GoogleAuthProvider();
+        const userCredential = await signInWithPopup(this.auth, provider);
+        this.currentUserEmail = userCredential.user.email;
+        this.currentUserId = userCredential.user.uid;
+        return userCredential.user;
+      }
     }
   }
 

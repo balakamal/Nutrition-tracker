@@ -1,5 +1,12 @@
 {
   "appId": "com.personal.nutritiontracker",
   "appName": "Nutrition Tracker",
-  "webDir": "dist/nutrition-tracker/browser"
+  "webDir": "dist/nutrition-tracker/browser",
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "clientId": "399325901526-9fje7pku9e8h0h4k4k4k4k4k4k4k4k4k.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
+    }
+  }
 }
